@@ -20,6 +20,12 @@ let macronutrientChart = new Chart(ctx, {
         plugins: {
             legend: {
                 position: 'bottom',
+                labels: {
+                    font: {
+                        size: 14,
+                        family: 'Arial'
+                    }
+                }
             }
         }
     }
@@ -76,7 +82,7 @@ function updateTotals(calories, fats, carbs, protein) {
     updateRemaining();
 }
 
-// Update remaining calories (optional)
+// Update remaining calories
 function updateRemaining() {
     const calorieRemaining = parseInt(calorieGoal.textContent, 10) - parseInt(caloriesConsumed.textContent, 10);
     caloriesRemaining.textContent = Math.max(calorieRemaining, 0);
@@ -113,6 +119,29 @@ function loadGoals() {
     updateRemaining();
 }
 
+// Dark Mode Toggle
+const darkModeToggle = document.getElementById('dark-mode-toggle');
+
+darkModeToggle.addEventListener('click', function () {
+    document.body.classList.toggle('dark-mode');
+
+    // Save the preference in localStorage
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+});
+
+// Load Dark Mode preference on page load
+document.addEventListener('DOMContentLoaded', function () {
+    const darkModePreference = localStorage.getItem('darkMode');
+    if (darkModePreference === 'enabled') {
+        document.body.classList.add('dark-mode');
+    }
+
+    loadMeals();
+    loadGoals();
+    updateRemaining();
+});
+
 // Event listeners for form submissions
 goalForm.addEventListener('submit', function (event) {
     event.preventDefault();
@@ -136,11 +165,4 @@ mealForm.addEventListener('submit', function (event) {
 
     // Clear the form
     mealForm.reset();
-});
-
-// Load data on page load
-document.addEventListener('DOMContentLoaded', function () {
-    loadMeals();
-    loadGoals();
-    updateRemaining();
 });

@@ -122,6 +122,32 @@ button:active {
     line-height: 1.5;
 }
 
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #121212; /* Dark background */
+    background-image: none; /* Disable the background image */
+    color: #ffffff; /* Light text color */
+}
+
+.dark-mode .card {
+    background-color: #1e1e1e; /* Dark card background */
+    color: #ffffff; /* Light text color */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+}
+
+.dark-mode button {
+    background-color: #333333; /* Dark button background */
+    color: #ffffff; /* Light button text */
+}
+
+.dark-mode button:hover {
+    background-color: #555555; /* Slightly lighter button on hover */
+}
+
+.dark-mode .card-title {
+    color: #76c7c0; /* Accent color for titles */
+}
+
 /* Responsive Styles for Mobile Devices */
 @media (max-width: 600px) {
     body {
