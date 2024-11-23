@@ -1,94 +1,117 @@
-/* General Styling */
+/* Base Styles */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
     margin: 0;
     padding: 20px;
-    text-align: center;
+    background-color: #f9f9f9;
     color: #333;
 }
 
-/* Header */
 h1 {
-    color: #007BFF;
-    margin-bottom: 10px;
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
-p {
-    margin-top: 0;
-    color: #555;
-}
-
-/* Form Styling */
 form {
-    margin: 20px auto;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    display: inline-block;
-    background-color: #fff;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
 
-input {
+input, button {
     padding: 10px;
-    margin: 5px;
-    width: 200px;
-    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
     border-radius: 5px;
-    font-size: 14px;
 }
 
 button {
-    padding: 10px 20px;
-    background-color: #007BFF;
+    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
     background-color: #0056b3;
 }
 
-/* Meal List */
-h2 {
-    margin-top: 30px;
-    font-size: 20px;
-    text-transform: uppercase;
-    color: #007BFF;
-}
-
-ul {
-    list-style: none;
+#meal-list {
+    list-style-type: none;
     padding: 0;
-    max-width: 500px;
-    margin: 0 auto;
+    margin: 0;
 }
 
-li {
+#meal-list li {
+    padding: 10px;
+    margin-bottom: 10px;
     background-color: #fff;
-    margin: 10px 0;
-    padding: 10px 15px;
+    border: 1px solid #ddd;
     border-radius: 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
 }
 
-li button {
-    padding: 5px 10px;
-    font-size: 12px;
+#meal-list li:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#meal-list li button {
     background-color: #dc3545;
     color: white;
     border: none;
     border-radius: 5px;
+    padding: 5px 10px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-li button:hover {
+#meal-list li button:hover {
     background-color: #a71d2a;
+}
+
+/* Nutrient Tracker Section */
+#goal-tracker p {
+    margin: 10px 0;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* Responsive Styles for Mobile Devices */
+@media (max-width: 600px) {
+    body {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 20px;
+        text-align: center;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    input, button {
+        font-size: 16px;
+        width: 100%;
+    }
+
+    #meal-list li {
+        font-size: 14px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #meal-list li button {
+        margin-top: 10px;
+        width: 100%;
+    }
 }
