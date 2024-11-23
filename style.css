@@ -1,7 +1,7 @@
 /* Base Styles */
 body {
-    background-image: url('https://via.placeholder.com/1920x1080'); /* Replace with your image URL */
-    background-size: cover; /* Ensure the image covers the screen */
+    background-image: url('./images/background.jpg'); /* Using your local image */
+    background-size: cover; /* Ensure the image covers the entire screen */
     background-repeat: no-repeat; /* Prevent tiling */
     background-attachment: fixed; /* Keep the background in place while scrolling */
     color: #333; /* Ensure good text contrast */
