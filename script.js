@@ -1,50 +1,44 @@
-// Get references to form, meal list, and nutrient totals
-const form = document.getElementById('meal-form');
-const mealList = document.getElementById('meal-list');
-const caloriesConsumed = document.getElementById('calories-consumed');
-const totalFats = document.getElementById('total-fats');
-const totalCarbs = document.getElementById('total-carbs');
-const totalProtein = document.getElementById('total-protein');
+// Global variables to track totals
+let fats = 0;
+let carbs = 0;
+let protein = 0;
 
-// Get references for nutrient goals
-const calorieGoal = document.getElementById('calorie-goal');
-const fatGoal = document.getElementById('fat-goal');
-const carbGoal = document.getElementById('carb-goal');
-const proteinGoal = document.getElementById('protein-goal');
+// Initialize chart for macronutrient distribution
+let ctx = document.getElementById('macronutrient-chart').getContext('2d');
+let macronutrientChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Fats (g)', 'Carbohydrates (g)', 'Protein (g)'],
+        datasets: [{
+            label: 'Macronutrient Distribution',
+            data: [fats, carbs, protein],
+            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'], // Colors for each nutrient
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+            }
+        }
+    }
+});
 
-// Get references for remaining nutrients
-const caloriesRemaining = document.getElementById('calories-remaining');
-const fatRemaining = document.getElementById('fat-remaining');
-const carbRemaining = document.getElementById('carb-remaining');
-const proteinRemaining = document.getElementById('protein-remaining');
+// Update chart with new macronutrient data
+function updateChart(newFats, newCarbs, newProtein) {
+    fats += parseInt(newFats);
+    carbs += parseInt(newCarbs);
+    protein += parseInt(newProtein);
 
-// Get goal form inputs
-const goalForm = document.getElementById('goal-form');
-const dailyCalorieGoalInput = document.getElementById('daily-calorie-goal');
-const dailyFatGoalInput = document.getElementById('daily-fat-goal');
-const dailyCarbGoalInput = document.getElementById('daily-carb-goal');
-const dailyProteinGoalInput = document.getElementById('daily-protein-goal');
-
-// Save meals to local storage
-function saveMeals() {
-    const meals = [];
-    mealList.querySelectorAll('li').forEach(meal => {
-        meals.push(meal.dataset);
-    });
-    localStorage.setItem('meals', JSON.stringify(meals));
+    macronutrientChart.data.datasets[0].data = [fats, carbs, protein];
+    macronutrientChart.update();
 }
 
-// Load meals from local storage
-function loadMeals() {
-    const savedMeals = JSON.parse(localStorage.getItem('meals')) || [];
-    savedMeals.forEach(data => {
-        addMealToList(data.name, data.calories, data.fats, data.carbs, data.protein);
-    });
-}
-
-// Add a meal to the list
+// Add meal to the list and update chart/totals
 function addMealToList(name, calories, fats, carbs, protein) {
     const mealItem = document.createElement('li');
+    mealItem.classList.add('list-group-item');
     mealItem.textContent = `${name}: ${calories} calories, ${fats}g fats, ${carbs}g carbs, ${protein}g protein`;
     mealItem.dataset.name = name;
     mealItem.dataset.calories = calories;
@@ -52,24 +46,23 @@ function addMealToList(name, calories, fats, carbs, protein) {
     mealItem.dataset.carbs = carbs;
     mealItem.dataset.protein = protein;
 
-    // Create a delete button
+    // Create delete button
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
-    deleteButton.style.marginLeft = '10px';
+    deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'float-end');
     deleteButton.addEventListener('click', function () {
         mealList.removeChild(mealItem);
         updateTotals(-calories, -fats, -carbs, -protein);
         saveMeals();
     });
 
-    // Add delete button to meal item
+    // Append delete button and add meal to list
     mealItem.appendChild(deleteButton);
-
-    // Add meal item to the list
     mealList.appendChild(mealItem);
 
-    // Update totals
+    // Update totals and chart
     updateTotals(calories, fats, carbs, protein);
+    updateChart(fats, carbs, protein);
 }
 
 // Update totals for calories and macronutrients
@@ -83,59 +76,51 @@ function updateTotals(calories, fats, carbs, protein) {
     updateRemaining();
 }
 
-// Save nutrient goals to local storage
-function saveGoals() {
-    const goals = {
-        calorieGoal: dailyCalorieGoalInput.value || 0,
-        fatGoal: dailyFatGoalInput.value || 0,
-        carbGoal: dailyCarbGoalInput.value || 0,
-        proteinGoal: dailyProteinGoalInput.value || 0,
-    };
-    localStorage.setItem('nutrientGoals', JSON.stringify(goals));
-    loadGoals(); // Refresh displayed goals
-}
-
-// Load nutrient goals from local storage
-function loadGoals() {
-    const savedGoals = JSON.parse(localStorage.getItem('nutrientGoals')) || {
-        calorieGoal: 0,
-        fatGoal: 0,
-        carbGoal: 0,
-        proteinGoal: 0,
-    };
-
-    calorieGoal.textContent = savedGoals.calorieGoal;
-    fatGoal.textContent = savedGoals.fatGoal;
-    carbGoal.textContent = savedGoals.carbGoal;
-    proteinGoal.textContent = savedGoals.proteinGoal;
-
-    updateRemaining();
-}
-
-// Update remaining nutrients
+// Update remaining calories (optional)
 function updateRemaining() {
     const calorieRemaining = parseInt(calorieGoal.textContent, 10) - parseInt(caloriesConsumed.textContent, 10);
     caloriesRemaining.textContent = Math.max(calorieRemaining, 0);
-
-    const fatRemaining = parseInt(fatGoal.textContent, 10) - parseInt(totalFats.textContent, 10);
-    fatRemaining.textContent = Math.max(fatRemaining, 0);
-
-    const carbRemaining = parseInt(carbGoal.textContent, 10) - parseInt(totalCarbs.textContent, 10);
-    carbRemaining.textContent = Math.max(carbRemaining, 0);
-
-    const proteinRemaining = parseInt(proteinGoal.textContent, 10) - parseInt(totalProtein.textContent, 10);
-    proteinRemaining.textContent = Math.max(proteinRemaining, 0);
 }
 
-// Set nutrient goals on form submission
+// Save and load meals to/from localStorage
+function saveMeals() {
+    const meals = [];
+    mealList.querySelectorAll('li').forEach(meal => {
+        meals.push(meal.dataset);
+    });
+    localStorage.setItem('meals', JSON.stringify(meals));
+}
+
+function loadMeals() {
+    const savedMeals = JSON.parse(localStorage.getItem('meals')) || [];
+    savedMeals.forEach(data => {
+        addMealToList(data.name, data.calories, data.fats, data.carbs, data.protein);
+    });
+}
+
+// Save and load calorie goals
+function saveGoals() {
+    const goals = {
+        calorieGoal: dailyGoalInput.value || 0
+    };
+    localStorage.setItem('nutrientGoals', JSON.stringify(goals));
+    loadGoals();
+}
+
+function loadGoals() {
+    const savedGoals = JSON.parse(localStorage.getItem('nutrientGoals')) || { calorieGoal: 0 };
+    calorieGoal.textContent = savedGoals.calorieGoal;
+    updateRemaining();
+}
+
+// Event listeners for form submissions
 goalForm.addEventListener('submit', function (event) {
-    event.preventDefault(); // Prevent form refresh
+    event.preventDefault();
     saveGoals();
-    goalForm.reset(); // Clear the form
+    goalForm.reset();
 });
 
-// Form submission handler
-form.addEventListener('submit', function (event) {
+mealForm.addEventListener('submit', function (event) {
     event.preventDefault();
 
     // Get input values
@@ -145,17 +130,15 @@ form.addEventListener('submit', function (event) {
     const carbs = parseInt(document.getElementById('carbs').value, 10);
     const protein = parseInt(document.getElementById('protein').value, 10);
 
-    // Add the meal to the list
+    // Add meal and save
     addMealToList(mealName, calories, fats, carbs, protein);
-
-    // Save meals to local storage
     saveMeals();
 
     // Clear the form
-    form.reset();
+    mealForm.reset();
 });
 
-// Load everything on page load
+// Load data on page load
 document.addEventListener('DOMContentLoaded', function () {
     loadMeals();
     loadGoals();
