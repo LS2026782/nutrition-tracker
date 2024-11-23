@@ -54,6 +54,31 @@ button:active {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Restore shadow */
 }
 
+/* Card Styles */
+.card {
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+    border: none; /* Remove default border */
+    border-radius: 10px; /* Smooth corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    margin-bottom: 20px; /* Space between cards */
+    overflow: hidden; /* Ensure content fits within rounded corners */
+}
+
+.card-body {
+    padding: 20px; /* Add space inside the card */
+    color: #333; /* Ensure good contrast */
+    font-size: 16px;
+}
+
+/* Card Title Styling */
+.card-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #007bff; /* Match button primary color */
+}
+
 #meal-list {
     list-style-type: none;
     padding: 0;
