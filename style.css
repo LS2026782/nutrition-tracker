@@ -1,10 +1,13 @@
 /* Base Styles */
 body {
+    background-image: url('https://via.placeholder.com/1920x1080'); /* Replace with your image URL */
+    background-size: cover; /* Ensure the image covers the screen */
+    background-repeat: no-repeat; /* Prevent tiling */
+    background-attachment: fixed; /* Keep the background in place while scrolling */
+    color: #333; /* Ensure good text contrast */
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
-    background-color: #f9f9f9;
-    color: #333;
 }
 
 h1 {
@@ -28,10 +31,11 @@ input, button {
 button {
     background-color: #007bff;
     color: white;
+    font-weight: bold;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
     transition: background-color 0.3s ease;
+    cursor: pointer;
 }
 
 button:hover {
@@ -47,17 +51,17 @@ button:hover {
 #meal-list li {
     padding: 10px;
     margin-bottom: 10px;
-    background-color: #fff;
+    background-color: white;
     border: 1px solid #ddd;
     border-radius: 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: box-shadow 0.3s ease;
+    transition: transform 0.2s ease;
 }
 
 #meal-list li:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: scale(1.02);
 }
 
 #meal-list li button {
@@ -74,7 +78,7 @@ button:hover {
     background-color: #a71d2a;
 }
 
-/* Nutrient Tracker Section */
+/* Macronutrient Tracker Section */
 #goal-tracker p {
     margin: 10px 0;
     font-size: 16px;
