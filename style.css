@@ -1,19 +1,21 @@
 /* Base Styles */
 body {
-    background-image: url('./images/background.jpg'); /* Using your local image */
-    background-size: cover; /* Ensure the image covers the entire screen */
-    background-repeat: no-repeat; /* Prevent tiling */
-    background-attachment: fixed; /* Keep the background in place while scrolling */
-    color: #333; /* Ensure good text contrast */
+    background-image: url('./images/background.jpg'); /* Background for light mode */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #333; /* Text color for light mode */
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
+    transition: background-color 0.5s ease, color 0.5s ease; /* Smooth transition */
 }
 
 h1 {
     font-size: 24px;
     margin-bottom: 20px;
     text-align: center;
+    transition: color 0.5s ease; /* Smooth text color change */
 }
 
 form {
@@ -27,19 +29,20 @@ input {
     border: 1px solid #ccc;
     border-radius: 5px;
     width: 100%;
+    transition: background-color 0.5s ease, color 0.5s ease; /* Smooth transition */
 }
 
 /* Button Styling */
 button {
-    background-color: #007bff; /* Primary blue color */
-    color: white; /* Text color */
+    background-color: #007bff; /* Light mode button background */
+    color: white; /* Light mode text */
     font-weight: bold;
     font-size: 16px;
     padding: 10px 15px;
     border: none;
     border-radius: 5px; /* Smooth corners */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effects */
+    transition: background-color 0.5s ease, color 0.5s ease; /* Smooth transition */
     cursor: pointer;
 }
 
@@ -56,18 +59,20 @@ button:active {
 
 /* Card Styles */
 .card {
-    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
-    border: none; /* Remove default border */
+    background-color: rgba(255, 255, 255, 0.9); /* Light mode background */
+    border: none;
     border-radius: 10px; /* Smooth corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     margin-bottom: 20px; /* Space between cards */
     overflow: hidden; /* Ensure content fits within rounded corners */
+    transition: background-color 0.5s ease, color 0.5s ease; /* Smooth transition */
 }
 
 .card-body {
     padding: 20px; /* Add space inside the card */
-    color: #333; /* Ensure good contrast */
+    color: #333; /* Light mode text */
     font-size: 16px;
+    transition: color 0.5s ease; /* Smooth text color transition */
 }
 
 /* Card Title Styling */
@@ -77,6 +82,7 @@ button:active {
     margin-bottom: 15px;
     text-align: center;
     color: #007bff; /* Match button primary color */
+    transition: color 0.5s ease; /* Smooth transition */
 }
 
 #meal-list {
@@ -94,7 +100,7 @@ button:active {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, background-color 0.5s ease; /* Smooth transition */
 }
 
 #meal-list li:hover {
@@ -102,13 +108,13 @@ button:active {
 }
 
 #meal-list li button {
-    background-color: #dc3545;
+    background-color: #dc3545; /* Light mode delete button */
     color: white;
     border: none;
     border-radius: 5px;
     padding: 5px 10px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.5s ease; /* Smooth transition */
 }
 
 #meal-list li button:hover {
@@ -124,19 +130,19 @@ button:active {
 
 /* Dark Mode Styles */
 body.dark-mode {
-    background-color: #121212; /* Dark background */
-    background-image: none; /* Disable the background image */
-    color: #ffffff; /* Light text color */
+    background-color: #121212; /* Dark mode background */
+    background-image: none; /* Disable background image in dark mode */
+    color: #ffffff; /* Light text for dark mode */
 }
 
 .dark-mode .card {
-    background-color: #1e1e1e; /* Dark card background */
-    color: #ffffff; /* Light text color */
+    background-color: #1e1e1e; /* Dark mode card background */
+    color: #ffffff; /* Light text for cards */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Subtle shadow */
 }
 
 .dark-mode button {
-    background-color: #333333; /* Dark button background */
+    background-color: #333333; /* Dark mode button background */
     color: #ffffff; /* Light button text */
 }
 
@@ -145,7 +151,7 @@ body.dark-mode {
 }
 
 .dark-mode .card-title {
-    color: #76c7c0; /* Accent color for titles */
+    color: #76c7c0; /* Accent color for titles in dark mode */
 }
 
 /* Responsive Styles for Mobile Devices */
@@ -182,3 +188,4 @@ body.dark-mode {
         width: 100%;
     }
 }
+
