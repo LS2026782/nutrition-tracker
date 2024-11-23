@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutrition Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Welcome to Nutrition Tracker</h1>
+    <p>Track your meals and nutrients here!</p>
+
+    <!-- Daily Nutrient Goals Section -->
+    <div id="goal-tracker">
+        <h2>Daily Nutrient Goals</h2>
+        <p>
+            Calories: <span id="calorie-goal">0</span> | Consumed: <span id="calories-consumed">0</span> | Remaining: <span id="calories-remaining">0</span><br>
+            Fats: <span id="fat-goal">0</span> g | Consumed: <span id="total-fats">0</span> g | Remaining: <span id="fat-remaining">0</span> g<br>
+            Carbohydrates: <span id="carb-goal">0</span> g | Consumed: <span id="total-carbs">0</span> g | Remaining: <span id="carb-remaining">0</span> g<br>
+            Protein: <span id="protein-goal">0</span> g | Consumed: <span id="total-protein">0</span> g | Remaining: <span id="protein-remaining">0</span> g
+        </p>
+        <form id="goal-form">
+            <input type="number" id="daily-calorie-goal" placeholder="Set Calorie Goal" required>
+            <input type="number" id="daily-fat-goal" placeholder="Set Fat Goal (g)" required>
+            <input type="number" id="daily-carb-goal" placeholder="Set Carb Goal (g)" required>
+            <input type="number" id="daily-protein-goal" placeholder="Set Protein Goal (g)" required>
+            <button type="submit">Set Goals</button>
+        </form>
+    </div>
+
+    <!-- Meal Logging Form -->
+    <form id="meal-form">
+        <input type="text" id="meal-name" placeholder="Meal Name" required>
+        <input type="number" id="calories" placeholder="Calories" required>
+        <input type="number" id="fats" placeholder="Fats (g)" required>
+        <input type="number" id="carbs" placeholder="Carbohydrates (g)" required>
+        <input type="number" id="protein" placeholder="Protein (g)" required>
+        <button type="submit">Add Meal</button>
+    </form>
+
+    <!-- Logged Meals Section -->
+    <h2>Logged Meals</h2>
+    <ul id="meal-list"></ul>
+
+    <script src="script.js"></script>
+</body>
+</html>
