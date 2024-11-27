@@ -113,9 +113,11 @@ function loadUserData() {
     totalCarbs.textContent = userData.totalCarbs || 0;
     totalProtein.textContent = userData.totalProtein || 0;
 
-    // Populate meal list
-    mealList.innerHTML = '';
-    userData.meals.forEach(meal => addMealToList(meal.name, meal.calories, meal.fats, meal.carbs, meal.protein, false));
+    // Populate the meal list
+    mealList.innerHTML = ''; // Clear existing list
+    userData.meals.forEach(meal => {
+        addMealToList(meal.name, meal.calories, meal.fats, meal.carbs, meal.protein, false);
+    });
 }
 
 // Add Meal to the List
@@ -143,30 +145,19 @@ function addMealToList(name, calories, fats, carbs, protein, save = true) {
     }
 }
 
-// Update and Save Data
-function saveUpdatedData() {
-    if (!currentUser) return;
+// Update Totals Function
+function updateTotals(calories, fats, carbs, protein) {
+    const currentCalories = parseInt(caloriesConsumed.textContent, 10) || 0;
+    const currentFats = parseInt(totalFats.textContent, 10) || 0;
+    const currentCarbs = parseInt(totalCarbs.textContent, 10) || 0;
+    const currentProtein = parseInt(totalProtein.textContent, 10) || 0;
 
-    const updatedData = {
-        calorieGoal: parseInt(calorieGoal.textContent, 10),
-        caloriesConsumed: parseInt(caloriesConsumed.textContent, 10),
-        totalFats: parseInt(totalFats.textContent, 10),
-        totalCarbs: parseInt(totalCarbs.textContent, 10),
-        totalProtein: parseInt(totalProtein.textContent, 10),
-        meals: Array.from(mealList.children).map(item => {
-            const text = item.textContent;
-            const match = text.match(/^(.*?):\s(\d+)\s+calories,\s(\d+)g\s+fats,\s(\d+)g\s+carbs,\s(\d+)g\s+protein/);
-            return {
-                name: match[1],
-                calories: parseInt(match[2], 10),
-                fats: parseInt(match[3], 10),
-                carbs: parseInt(match[4], 10),
-                protein: parseInt(match[5], 10)
-            };
-        })
-    };
+    caloriesConsumed.textContent = currentCalories + calories;
+    totalFats.textContent = currentFats + fats;
+    totalCarbs.textContent = currentCarbs + carbs;
+    totalProtein.textContent = currentProtein + protein;
 
-    saveUserData(updatedData);
+    caloriesRemaining.textContent = parseInt(calorieGoal.textContent, 10) - parseInt(caloriesConsumed.textContent, 10);
 }
 
 // Reset the Tracker
