@@ -5,6 +5,8 @@ const loginForm = document.getElementById('login-form');
 const usernameInput = document.getElementById('username');
 const passwordInput = document.getElementById('password'); // Optional password handling
 const logoutButton = document.getElementById('logout-button');
+
+// Nutrition DOM Elements
 const calorieGoal = document.getElementById('calorie-goal');
 const caloriesConsumed = document.getElementById('calories-consumed');
 const caloriesRemaining = document.getElementById('calories-remaining');
@@ -15,9 +17,20 @@ const mealList = document.getElementById('meal-list');
 const goalForm = document.getElementById('goal-form');
 const mealForm = document.getElementById('meal-form');
 
-// Initialize App State
-let currentUser = null; // Track the logged-in user
+// Cardio DOM Elements
+const cardioForm = document.getElementById('cardio-form');
+const cardioWorkoutList = document.getElementById('cardio-workout-list');
 
+// Navigation Logic
+const nutritionTab = document.getElementById('nutrition-tab');
+const cardioTab = document.getElementById('cardio-tab');
+const nutritionSection = document.getElementById('nutrition-section');
+const cardioSection = document.getElementById('cardio-section');
+
+// App State
+let currentUser = null;
+
+// Initialize App
 function initializeApp() {
     const loggedInUser = localStorage.getItem('loggedInUser');
     if (loggedInUser) {
@@ -30,95 +43,86 @@ function initializeApp() {
 }
 
 // Login Functionality
-loginForm.addEventListener('submit', function (event) {
+loginForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const username = usernameInput.value.trim();
-    const password = passwordInput.value.trim(); // Optional: Password logic
+    const password = passwordInput.value.trim(); // Optional: Add password validation if needed
 
     if (username) {
-        currentUser = username; // Set the current user
+        currentUser = username;
         localStorage.setItem('loggedInUser', username);
 
-        // Initialize user data if not already present
         if (!localStorage.getItem(`userData_${username}`)) {
-            localStorage.setItem(`userData_${username}`, JSON.stringify({
-                calorieGoal: 0,
-                caloriesConsumed: 0,
-                totalFats: 0,
-                totalCarbs: 0,
-                totalProtein: 0,
-                meals: []
-            }));
+            localStorage.setItem(
+                `userData_${username}`,
+                JSON.stringify({
+                    calorieGoal: 0,
+                    caloriesConsumed: 0,
+                    totalFats: 0,
+                    totalCarbs: 0,
+                    totalProtein: 0,
+                    meals: [],
+                    cardioWorkouts: [],
+                })
+            );
         }
 
-        // Show user interface
         showUserUI(username);
     }
 
-    // Reset the form
     loginForm.reset();
 });
 
 // Logout Functionality
-logoutButton.addEventListener('click', function () {
+logoutButton.addEventListener('click', () => {
     localStorage.removeItem('loggedInUser');
-    currentUser = null; // Clear the current user
+    currentUser = null;
     showLoginUI();
 });
 
-// Show the User Interface After Login
+// Tab Navigation
+nutritionTab.addEventListener('click', () => {
+    nutritionSection.style.display = 'block';
+    cardioSection.style.display = 'none';
+    nutritionTab.classList.add('active');
+    cardioTab.classList.remove('active');
+    loadUserData(); // Reload nutrition data when switching tabs
+});
+
+cardioTab.addEventListener('click', () => {
+    cardioSection.style.display = 'block';
+    nutritionSection.style.display = 'none';
+    cardioTab.classList.add('active');
+    nutritionTab.classList.remove('active');
+    loadCardioData(); // Reload cardio data when switching tabs
+});
+
+// Show User UI
 function showUserUI(username) {
     loginSection.style.display = 'none';
     logoutSection.style.display = 'block';
     document.querySelector('h1').textContent = `Welcome, ${username}!`;
 
-    // Load user data
     loadUserData();
 }
 
-// Show the Login Interface
+// Show Login UI
 function showLoginUI() {
     loginSection.style.display = 'block';
     logoutSection.style.display = 'none';
-    document.querySelector('h1').textContent = 'Welcome to Nutrition Tracker';
+    document.querySelector('h1').textContent = 'Welcome to Health Tracker';
 
-    // Reset the tracker UI
     resetTracker();
 }
 
-// Save and Load User Data
+// Save User Data
 function saveUserData(data) {
     if (currentUser) {
         localStorage.setItem(`userData_${currentUser}`, JSON.stringify(data));
     }
 }
 
-// Save Updated Data
-function saveUpdatedData() {
-    if (!currentUser) return;
-
-    const updatedData = {
-        calorieGoal: parseInt(calorieGoal.textContent, 10),
-        caloriesConsumed: parseInt(caloriesConsumed.textContent, 10),
-        totalFats: parseInt(totalFats.textContent, 10),
-        totalCarbs: parseInt(totalCarbs.textContent, 10),
-        totalProtein: parseInt(totalProtein.textContent, 10),
-        meals: Array.from(mealList.children).map(item => {
-            const text = item.textContent;
-            const match = text.match(/^(.*?):\s(\d+)\s+calories,\s(\d+)g\s+fats,\s(\d+)g\s+carbs,\s(\d+)g\s+protein/);
-            return {
-                name: match[1],
-                calories: parseInt(match[2], 10),
-                fats: parseInt(match[3], 10),
-                carbs: parseInt(match[4], 10),
-                protein: parseInt(match[5], 10)
-            };
-        })
-    };
-
-    saveUserData(updatedData);
-}
-
+// Load User Data
 function loadUserData() {
     if (!currentUser) return;
 
@@ -128,10 +132,11 @@ function loadUserData() {
         totalFats: 0,
         totalCarbs: 0,
         totalProtein: 0,
-        meals: []
+        meals: [],
+        cardioWorkouts: [],
     };
 
-    // Populate UI with saved data
+    // Populate Nutrition UI
     calorieGoal.textContent = userData.calorieGoal || 0;
     caloriesConsumed.textContent = userData.caloriesConsumed || 0;
     caloriesRemaining.textContent = userData.calorieGoal - userData.caloriesConsumed;
@@ -139,40 +144,59 @@ function loadUserData() {
     totalCarbs.textContent = userData.totalCarbs || 0;
     totalProtein.textContent = userData.totalProtein || 0;
 
-    // Populate the meal list
-    mealList.innerHTML = ''; // Clear existing list
-    userData.meals.forEach(meal => {
+    mealList.innerHTML = ''; // Clear existing meal list
+    userData.meals.forEach((meal) => {
         addMealToList(meal.name, meal.calories, meal.fats, meal.carbs, meal.protein, false);
+    });
+
+    // Populate Cardio UI
+    cardioWorkoutList.innerHTML = ''; // Clear existing cardio list
+    userData.cardioWorkouts.forEach((workout) => {
+        addWorkoutToList(workout, false);
     });
 }
 
-// Add Meal to the List
+// Add Meal to List
 function addMealToList(name, calories, fats, carbs, protein, save = true) {
     const mealItem = document.createElement('li');
     mealItem.classList.add('list-group-item');
     mealItem.textContent = `${name}: ${calories} calories, ${fats}g fats, ${carbs}g carbs, ${protein}g protein`;
 
-    // Add delete button
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'float-end');
-    deleteButton.addEventListener('click', function () {
+    deleteButton.addEventListener('click', () => {
         mealList.removeChild(mealItem);
-        updateTotals(-calories, -fats, -carbs, -protein);
-        saveUpdatedData();
+        updateNutritionTotals(-calories, -fats, -carbs, -protein);
+        saveUserData(getCurrentUserData());
     });
 
     mealItem.appendChild(deleteButton);
     mealList.appendChild(mealItem);
 
     if (save) {
-        updateTotals(calories, fats, carbs, protein);
-        saveUpdatedData();
+        updateNutritionTotals(calories, fats, carbs, protein);
+        saveUserData(getCurrentUserData());
     }
 }
 
-// Update Totals Function
-function updateTotals(calories, fats, carbs, protein) {
+// Add Cardio Workout to List
+function addWorkoutToList(workout, save = true) {
+    const workoutItem = document.createElement('li');
+    workoutItem.classList.add('list-group-item');
+    workoutItem.textContent = `Workout Time: ${workout.workoutTime}, Distance: ${workout.distance} miles, Average Pace: ${workout.averagePace}, Heart Rate: ${workout.averageHeartRate} bpm`;
+
+    cardioWorkoutList.appendChild(workoutItem);
+
+    if (save) {
+        const userData = getCurrentUserData();
+        userData.cardioWorkouts.push(workout);
+        saveUserData(userData);
+    }
+}
+
+// Update Nutrition Totals
+function updateNutritionTotals(calories, fats, carbs, protein) {
     const currentCalories = parseInt(caloriesConsumed.textContent, 10) || 0;
     const currentFats = parseInt(totalFats.textContent, 10) || 0;
     const currentCarbs = parseInt(totalCarbs.textContent, 10) || 0;
@@ -186,7 +210,7 @@ function updateTotals(calories, fats, carbs, protein) {
     caloriesRemaining.textContent = parseInt(calorieGoal.textContent, 10) - parseInt(caloriesConsumed.textContent, 10);
 }
 
-// Reset the Tracker
+// Reset Tracker
 function resetTracker() {
     calorieGoal.textContent = 0;
     caloriesConsumed.textContent = 0;
@@ -195,19 +219,20 @@ function resetTracker() {
     totalCarbs.textContent = 0;
     totalProtein.textContent = 0;
     mealList.innerHTML = '';
+    cardioWorkoutList.innerHTML = '';
 }
 
-// Event Listeners for Forms
-goalForm.addEventListener('submit', function (event) {
+// Event Listeners
+goalForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const goal = parseInt(document.getElementById('daily-goal').value, 10);
     calorieGoal.textContent = goal;
     caloriesRemaining.textContent = goal - parseInt(caloriesConsumed.textContent, 10);
-    saveUpdatedData();
+    saveUserData(getCurrentUserData());
     goalForm.reset();
 });
 
-mealForm.addEventListener('submit', function (event) {
+mealForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
     const name = document.getElementById('meal-name').value;
@@ -220,6 +245,35 @@ mealForm.addEventListener('submit', function (event) {
     mealForm.reset();
 });
 
+cardioForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const workoutTime = document.getElementById('workout-time').value;
+    const distance = parseFloat(document.getElementById('distance').value) || 0;
+    const averagePace = document.getElementById('average-pace').value;
+    const averageHeartRate = parseInt(document.getElementById('average-heart-rate').value, 10) || 0;
+
+    const workout = { workoutTime, distance, averagePace, averageHeartRate };
+    addWorkoutToList(workout);
+    cardioForm.reset();
+});
+
+// Helper to Get Current User Data
+function getCurrentUserData() {
+    return JSON.parse(localStorage.getItem(`userData_${currentUser}`)) || {
+        calorieGoal: 0,
+        caloriesConsumed: 0,
+        totalFats: 0,
+        totalCarbs: 0,
+        totalProtein: 0,
+        meals: [],
+        cardioWorkouts: [],
+    };
+}
+
 // Initialize App
 initializeApp();
+
+
+
 
