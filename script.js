@@ -16,9 +16,12 @@ const goalForm = document.getElementById('goal-form');
 const mealForm = document.getElementById('meal-form');
 
 // Initialize App State
+let currentUser = null; // Track the logged-in user
+
 function initializeApp() {
     const loggedInUser = localStorage.getItem('loggedInUser');
     if (loggedInUser) {
+        currentUser = loggedInUser;
         showUserUI(loggedInUser);
         loadUserData();
     } else {
@@ -33,12 +36,12 @@ loginForm.addEventListener('submit', function (event) {
     const password = passwordInput.value.trim(); // Optional: Password logic
 
     if (username) {
-        // Save the logged-in user to localStorage
+        currentUser = username; // Set the current user
         localStorage.setItem('loggedInUser', username);
 
         // Initialize user data if not already present
-        if (!localStorage.getItem('userData')) {
-            localStorage.setItem('userData', JSON.stringify({
+        if (!localStorage.getItem(`userData_${username}`)) {
+            localStorage.setItem(`userData_${username}`, JSON.stringify({
                 calorieGoal: 0,
                 caloriesConsumed: 0,
                 totalFats: 0,
@@ -59,6 +62,7 @@ loginForm.addEventListener('submit', function (event) {
 // Logout Functionality
 logoutButton.addEventListener('click', function () {
     localStorage.removeItem('loggedInUser');
+    currentUser = null; // Clear the current user
     showLoginUI();
 });
 
@@ -84,11 +88,15 @@ function showLoginUI() {
 
 // Save and Load User Data
 function saveUserData(data) {
-    localStorage.setItem('userData', JSON.stringify(data));
+    if (currentUser) {
+        localStorage.setItem(`userData_${currentUser}`, JSON.stringify(data));
+    }
 }
 
 function loadUserData() {
-    const userData = JSON.parse(localStorage.getItem('userData')) || {
+    if (!currentUser) return;
+
+    const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`)) || {
         calorieGoal: 0,
         caloriesConsumed: 0,
         totalFats: 0,
@@ -137,6 +145,8 @@ function addMealToList(name, calories, fats, carbs, protein, save = true) {
 
 // Update and Save Data
 function saveUpdatedData() {
+    if (!currentUser) return;
+
     const updatedData = {
         calorieGoal: parseInt(calorieGoal.textContent, 10),
         caloriesConsumed: parseInt(caloriesConsumed.textContent, 10),
@@ -156,7 +166,6 @@ function saveUpdatedData() {
         })
     };
 
-    console.log('Saving userData:', updatedData);
     saveUserData(updatedData);
 }
 
