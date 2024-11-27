@@ -3,7 +3,7 @@ const loginSection = document.getElementById('login-section');
 const logoutSection = document.getElementById('logout-section');
 const loginForm = document.getElementById('login-form');
 const usernameInput = document.getElementById('username');
-const passwordInput = document.getElementById('password'); // Optional for password
+const passwordInput = document.getElementById('password'); // Optional password handling
 const logoutButton = document.getElementById('logout-button');
 const calorieGoal = document.getElementById('calorie-goal');
 const caloriesConsumed = document.getElementById('calories-consumed');
@@ -30,13 +30,13 @@ function initializeApp() {
 loginForm.addEventListener('submit', function (event) {
     event.preventDefault();
     const username = usernameInput.value.trim();
-    const password = passwordInput.value.trim(); // Optional password logic
+    const password = passwordInput.value.trim(); // Optional: Password logic
 
     if (username) {
         // Save the logged-in user to localStorage
         localStorage.setItem('loggedInUser', username);
 
-        // Save fresh user data to avoid duplication
+        // Initialize user data if not already present
         if (!localStorage.getItem('userData')) {
             localStorage.setItem('userData', JSON.stringify({
                 calorieGoal: 0,
@@ -48,19 +48,17 @@ loginForm.addEventListener('submit', function (event) {
             }));
         }
 
-        // Update the UI
+        // Show user interface
         showUserUI(username);
     }
 
-    // Clear the input
+    // Reset the form
     loginForm.reset();
 });
 
 // Logout Functionality
 logoutButton.addEventListener('click', function () {
-    // Remove the logged-in user from localStorage
     localStorage.removeItem('loggedInUser');
-    localStorage.removeItem('userData');
     showLoginUI();
 });
 
@@ -70,7 +68,7 @@ function showUserUI(username) {
     logoutSection.style.display = 'block';
     document.querySelector('h1').textContent = `Welcome, ${username}!`;
 
-    // Load user-specific data
+    // Load user data
     loadUserData();
 }
 
@@ -84,7 +82,7 @@ function showLoginUI() {
     resetTracker();
 }
 
-// Save and Load User-Specific Data
+// Save and Load User Data
 function saveUserData(data) {
     localStorage.setItem('userData', JSON.stringify(data));
 }
@@ -99,7 +97,7 @@ function loadUserData() {
         meals: []
     };
 
-    // Populate the tracker
+    // Populate UI with saved data
     calorieGoal.textContent = userData.calorieGoal || 0;
     caloriesConsumed.textContent = userData.caloriesConsumed || 0;
     caloriesRemaining.textContent = userData.calorieGoal - userData.caloriesConsumed;
@@ -107,7 +105,7 @@ function loadUserData() {
     totalCarbs.textContent = userData.totalCarbs || 0;
     totalProtein.textContent = userData.totalProtein || 0;
 
-    // Populate the meal list
+    // Populate meal list
     mealList.innerHTML = '';
     userData.meals.forEach(meal => addMealToList(meal.name, meal.calories, meal.fats, meal.carbs, meal.protein, false));
 }
@@ -118,7 +116,7 @@ function addMealToList(name, calories, fats, carbs, protein, save = true) {
     mealItem.classList.add('list-group-item');
     mealItem.textContent = `${name}: ${calories} calories, ${fats}g fats, ${carbs}g carbs, ${protein}g protein`;
 
-    // Create delete button
+    // Add delete button
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'float-end');
@@ -137,7 +135,7 @@ function addMealToList(name, calories, fats, carbs, protein, save = true) {
     }
 }
 
-// Save Updated Data
+// Update and Save Data
 function saveUpdatedData() {
     const updatedData = {
         calorieGoal: parseInt(calorieGoal.textContent, 10),
@@ -146,10 +144,19 @@ function saveUpdatedData() {
         totalCarbs: parseInt(totalCarbs.textContent, 10),
         totalProtein: parseInt(totalProtein.textContent, 10),
         meals: Array.from(mealList.children).map(item => {
-            const [name, calories, fats, carbs, protein] = item.textContent.match(/[^:\s]+/g);
-            return { name, calories, fats, carbs, protein };
+            const text = item.textContent;
+            const match = text.match(/^(.*?):\s(\d+)\s+calories,\s(\d+)g\s+fats,\s(\d+)g\s+carbs,\s(\d+)g\s+protein/);
+            return {
+                name: match[1],
+                calories: parseInt(match[2], 10),
+                fats: parseInt(match[3], 10),
+                carbs: parseInt(match[4], 10),
+                protein: parseInt(match[5], 10)
+            };
         })
     };
+
+    console.log('Saving userData:', updatedData);
     saveUserData(updatedData);
 }
 
@@ -187,5 +194,5 @@ mealForm.addEventListener('submit', function (event) {
     mealForm.reset();
 });
 
-// Initialize the App
+// Initialize App
 initializeApp();
