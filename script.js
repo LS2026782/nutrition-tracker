@@ -93,6 +93,32 @@ function saveUserData(data) {
     }
 }
 
+// Save Updated Data
+function saveUpdatedData() {
+    if (!currentUser) return;
+
+    const updatedData = {
+        calorieGoal: parseInt(calorieGoal.textContent, 10),
+        caloriesConsumed: parseInt(caloriesConsumed.textContent, 10),
+        totalFats: parseInt(totalFats.textContent, 10),
+        totalCarbs: parseInt(totalCarbs.textContent, 10),
+        totalProtein: parseInt(totalProtein.textContent, 10),
+        meals: Array.from(mealList.children).map(item => {
+            const text = item.textContent;
+            const match = text.match(/^(.*?):\s(\d+)\s+calories,\s(\d+)g\s+fats,\s(\d+)g\s+carbs,\s(\d+)g\s+protein/);
+            return {
+                name: match[1],
+                calories: parseInt(match[2], 10),
+                fats: parseInt(match[3], 10),
+                carbs: parseInt(match[4], 10),
+                protein: parseInt(match[5], 10)
+            };
+        })
+    };
+
+    saveUserData(updatedData);
+}
+
 function loadUserData() {
     if (!currentUser) return;
 
@@ -196,3 +222,4 @@ mealForm.addEventListener('submit', function (event) {
 
 // Initialize App
 initializeApp();
+
