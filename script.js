@@ -17,11 +17,17 @@ const cardioWorkoutList = document.getElementById('cardio-workout-list');
 
 // Initialize App State
 let currentUser = 'defaultUser'; // Example default user
-console.log(`Initial currentUser: ${currentUser}`); // Log the initial value of currentUser
+
+// Ensure DOM is fully loaded before running the app
+document.addEventListener('DOMContentLoaded', () => {
+    console.log(`Initial currentUser: ${currentUser}`);
+    initializeApp();
+});
 
 function initializeApp() {
-    console.log(`Initializing app for user: ${currentUser}`); // Log currentUser during initialization
+    console.log(`Initializing app for user: ${currentUser}`);
     if (!localStorage.getItem(`userData_${currentUser}`)) {
+        console.log(`Creating default data for userData_${currentUser}`);
         const defaultData = {
             calorieGoal: 0,
             caloriesConsumed: 0,
@@ -32,33 +38,32 @@ function initializeApp() {
             workouts: [],
         };
         localStorage.setItem(`userData_${currentUser}`, JSON.stringify(defaultData));
-        console.log(`Created default data for userData_${currentUser}`); // Log default data creation
     }
     loadUserData();
 }
 
 // Save and Load User Data
 function saveUserData(data) {
-    console.log(`Saving data to localStorage with key: userData_${currentUser}`); // Log the key being used
+    console.log(`Saving data to localStorage with key: userData_${currentUser}`);
     localStorage.setItem(`userData_${currentUser}`, JSON.stringify(data));
 }
 
 function loadUserData() {
-    console.log(`Accessing localStorage with key: userData_${currentUser}`); // Log the key being accessed
+    console.log(`Accessing localStorage with key: userData_${currentUser}`);
     const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
 
-    if (!userData) {
-        console.error(`No data found in localStorage for key: userData_${currentUser}`);
-        return;
-    }
+    // Safeguard against missing elements
+    if (calorieGoal) calorieGoal.textContent = userData.calorieGoal || 0;
+    if (caloriesConsumed) caloriesConsumed.textContent = userData.caloriesConsumed || 0;
+    if (caloriesRemaining) caloriesRemaining.textContent = userData.calorieGoal - userData.caloriesConsumed;
+    if (totalFats) totalFats.textContent = userData.totalFats || 0;
+    if (totalCarbs) totalCarbs.textContent = userData.totalCarbs || 0;
+    if (totalProtein) totalProtein.textContent = userData.totalProtein || 0;
 
-    // Update UI with saved data
-    calorieGoal.textContent = userData.calorieGoal || 0;
-    caloriesConsumed.textContent = userData.caloriesConsumed || 0;
-    caloriesRemaining.textContent = userData.calorieGoal - userData.caloriesConsumed;
-    totalFats.textContent = userData.totalFats || 0;
-    totalCarbs.textContent = userData.totalCarbs || 0;
-    totalProtein.textContent = userData.totalProtein || 0;
+    // Debug logs for missing elements
+    console.log('calorieGoal:', calorieGoal);
+    console.log('caloriesConsumed:', caloriesConsumed);
+    console.log('caloriesRemaining:', caloriesRemaining);
 
     // Load meals into the UI
     mealList.innerHTML = '';
@@ -162,8 +167,6 @@ cardioForm.addEventListener('submit', event => {
     cardioForm.reset();
 });
 
-// Initialize App
-initializeApp();
 
 
 
