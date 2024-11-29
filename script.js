@@ -17,8 +17,10 @@ const cardioWorkoutList = document.getElementById('cardio-workout-list');
 
 // Initialize App State
 let currentUser = 'defaultUser'; // Example default user
+console.log(`Initial currentUser: ${currentUser}`); // Log the initial value of currentUser
 
 function initializeApp() {
+    console.log(`Initializing app for user: ${currentUser}`); // Log currentUser during initialization
     if (!localStorage.getItem(`userData_${currentUser}`)) {
         const defaultData = {
             calorieGoal: 0,
@@ -30,21 +32,25 @@ function initializeApp() {
             workouts: [],
         };
         localStorage.setItem(`userData_${currentUser}`, JSON.stringify(defaultData));
-        console.log("New user data initialized in localStorage:", `userData_${currentUser}`, defaultData);
-    } else {
-        console.log("Existing user data found in localStorage:", `userData_${currentUser}`, JSON.parse(localStorage.getItem(`userData_${currentUser}`)));
+        console.log(`Created default data for userData_${currentUser}`); // Log default data creation
     }
     loadUserData();
 }
 
-
 // Save and Load User Data
 function saveUserData(data) {
+    console.log(`Saving data to localStorage with key: userData_${currentUser}`); // Log the key being used
     localStorage.setItem(`userData_${currentUser}`, JSON.stringify(data));
 }
 
 function loadUserData() {
+    console.log(`Accessing localStorage with key: userData_${currentUser}`); // Log the key being accessed
     const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
+
+    if (!userData) {
+        console.error(`No data found in localStorage for key: userData_${currentUser}`);
+        return;
+    }
 
     // Update UI with saved data
     calorieGoal.textContent = userData.calorieGoal || 0;
