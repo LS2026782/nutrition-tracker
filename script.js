@@ -51,6 +51,20 @@ function initializeApp() {
     const loggedInUser = localStorage.getItem('loggedInUser');
     if (loggedInUser) {
         currentUser = loggedInUser;
+
+        // Initialize data if it doesn't exist
+        if (!localStorage.getItem(`userData_${currentUser}`)) {
+            const defaultData = {
+                calorieGoal: 0,
+                caloriesConsumed: 0,
+                totalFats: 0,
+                totalCarbs: 0,
+                totalProtein: 0,
+                meals: [],
+                workouts: []
+            };
+            localStorage.setItem(`userData_${currentUser}`, JSON.stringify(defaultData));
+        }
         loadUserData();
     }
 }
@@ -59,6 +73,7 @@ function initializeApp() {
 function saveUserData(data) {
     if (currentUser) {
         localStorage.setItem(`userData_${currentUser}`, JSON.stringify(data));
+        loadUserData(); // Refresh the UI with the latest data
     }
 }
 
