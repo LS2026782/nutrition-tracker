@@ -30,9 +30,13 @@ function initializeApp() {
             workouts: [],
         };
         localStorage.setItem(`userData_${currentUser}`, JSON.stringify(defaultData));
+        console.log("New user data initialized in localStorage:", `userData_${currentUser}`, defaultData);
+    } else {
+        console.log("Existing user data found in localStorage:", `userData_${currentUser}`, JSON.parse(localStorage.getItem(`userData_${currentUser}`)));
     }
     loadUserData();
 }
+
 
 // Save and Load User Data
 function saveUserData(data) {
