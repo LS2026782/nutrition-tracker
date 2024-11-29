@@ -21,45 +21,37 @@ const cardioTab = document.getElementById('cardio-tab');
 const nutritionSection = document.getElementById('nutrition-section');
 const cardioSection = document.getElementById('cardio-section');
 
-// Verify if all DOM elements are properly initialized
-console.log('DOM Elements Check:');
-console.log('nutritionTab:', nutritionTab);
-console.log('cardioTab:', cardioTab);
-console.log('nutritionSection:', nutritionSection);
-console.log('cardioSection:', cardioSection);
-
-// Enhanced Tab Navigation with Debug Logs
-if (nutritionTab && cardioTab && nutritionSection && cardioSection) {
-    nutritionTab.addEventListener('click', () => {
-        console.log('Switching to Nutrition Tab');
-        nutritionSection.style.display = 'block';
-        cardioSection.style.display = 'none';
-        nutritionTab.classList.add('active');
-        cardioTab.classList.remove('active');
-        console.log('Nutrition Tab is now active');
-    });
-
-    cardioTab.addEventListener('click', () => {
-        console.log('Switching to Cardio Tab');
-        cardioSection.style.display = 'block';
-        nutritionSection.style.display = 'none';
-        cardioTab.classList.add('active');
-        nutritionTab.classList.remove('active');
-        console.log('Cardio Tab is now active');
-    });
-} else {
-    console.error('One or more tab navigation elements are not initialized correctly.');
-}
-
-// Initialize App State
-let currentUser = 'defaultUser'; // Example default user
-
-// Ensure DOM is fully loaded before running the app
+// Debug Logs
 document.addEventListener('DOMContentLoaded', () => {
-    console.log(`Initial currentUser: ${currentUser}`);
+    console.log("DOM fully loaded and parsed");
+    console.log("Checking all required DOM elements...");
+    console.log("nutritionTab:", nutritionTab);
+    console.log("cardioTab:", cardioTab);
+    console.log("nutritionSection:", nutritionSection);
+    console.log("cardioSection:", cardioSection);
+
     initializeApp();
 });
 
+// Tab Event Listeners
+nutritionTab?.addEventListener('click', () => {
+    console.log('Switching to Nutrition Tab');
+    nutritionSection.style.display = 'block';
+    cardioSection.style.display = 'none';
+    nutritionTab.classList.add('active');
+    cardioTab.classList.remove('active');
+});
+
+cardioTab?.addEventListener('click', () => {
+    console.log('Switching to Cardio Tab');
+    cardioSection.style.display = 'block';
+    nutritionSection.style.display = 'none';
+    cardioTab.classList.add('active');
+    nutritionTab.classList.remove('active');
+});
+
+// Initialize App State
+let currentUser = 'defaultUser'; // Default user setup
 function initializeApp() {
     console.log(`Initializing app for user: ${currentUser}`);
     if (!localStorage.getItem(`userData_${currentUser}`)) {
@@ -75,7 +67,6 @@ function initializeApp() {
         };
         localStorage.setItem(`userData_${currentUser}`, JSON.stringify(defaultData));
     }
-    console.log('Current userData:', localStorage.getItem(`userData_${currentUser}`));
     loadUserData();
 }
 
@@ -88,24 +79,27 @@ function saveUserData(data) {
 function loadUserData() {
     console.log(`Accessing localStorage with key: userData_${currentUser}`);
     const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
-    console.log('Loaded userData:', userData);
 
-    if (calorieGoal) calorieGoal.textContent = userData.calorieGoal || 0;
-    if (caloriesConsumed) caloriesConsumed.textContent = userData.caloriesConsumed || 0;
-    if (caloriesRemaining) caloriesRemaining.textContent = userData.calorieGoal - userData.caloriesConsumed;
-    if (totalFats) totalFats.textContent = userData.totalFats || 0;
-    if (totalCarbs) totalCarbs.textContent = userData.totalCarbs || 0;
-    if (totalProtein) totalProtein.textContent = userData.totalProtein || 0;
+    if (userData) {
+        if (calorieGoal) calorieGoal.textContent = userData.calorieGoal || 0;
+        if (caloriesConsumed) caloriesConsumed.textContent = userData.caloriesConsumed || 0;
+        if (caloriesRemaining) caloriesRemaining.textContent = userData.calorieGoal - userData.caloriesConsumed;
+        if (totalFats) totalFats.textContent = userData.totalFats || 0;
+        if (totalCarbs) totalCarbs.textContent = userData.totalCarbs || 0;
+        if (totalProtein) totalProtein.textContent = userData.totalProtein || 0;
 
-    mealList.innerHTML = '';
-    userData.meals.forEach(meal => {
-        addMealToList(meal.name, meal.calories, meal.fats, meal.carbs, meal.protein, false);
-    });
+        mealList.innerHTML = '';
+        userData.meals.forEach(meal => {
+            addMealToList(meal.name, meal.calories, meal.fats, meal.carbs, meal.protein, false);
+        });
 
-    cardioWorkoutList.innerHTML = '';
-    userData.workouts.forEach(workout => {
-        addCardioToList(workout.time, workout.distance, workout.pace, workout.heartRate, false);
-    });
+        cardioWorkoutList.innerHTML = '';
+        userData.workouts.forEach(workout => {
+            addCardioToList(workout.time, workout.distance, workout.pace, workout.heartRate, false);
+        });
+    } else {
+        console.error("No userData found in localStorage for key:", `userData_${currentUser}`);
+    }
 }
 
 // Add Meal to List
@@ -166,6 +160,7 @@ function addCardioToList(time, distance, pace, heartRate, save = true) {
 goalForm.addEventListener('submit', event => {
     event.preventDefault();
     const goal = parseInt(document.getElementById('daily-goal').value, 10);
+    console.log('Setting Calorie Goal:', goal);
     const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
     userData.calorieGoal = goal;
     saveUserData(userData);
@@ -181,7 +176,6 @@ mealForm.addEventListener('submit', event => {
     const fats = parseInt(document.getElementById('fats').value, 10);
     const carbs = parseInt(document.getElementById('carbs').value, 10);
     const protein = parseInt(document.getElementById('protein').value, 10);
-
     console.log('Logging Meal:', { name, calories, fats, carbs, protein });
     addMealToList(name, calories, fats, carbs, protein);
     mealForm.reset();
@@ -193,7 +187,6 @@ cardioForm.addEventListener('submit', event => {
     const dist = parseFloat(distance.value);
     const pace = averagePace.value;
     const heartRate = parseInt(averageHeartRate.value, 10);
-
     console.log('Logging Cardio Workout:', { time, dist, pace, heartRate });
     addCardioToList(time, dist, pace, heartRate);
     cardioForm.reset();
