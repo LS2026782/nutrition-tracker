@@ -15,6 +15,29 @@ const averagePace = document.getElementById('average-pace');
 const averageHeartRate = document.getElementById('average-heart-rate');
 const cardioWorkoutList = document.getElementById('cardio-workout-list');
 
+// Tab Navigation Logic
+const nutritionTab = document.getElementById('nutrition-tab');
+const cardioTab = document.getElementById('cardio-tab');
+const nutritionSection = document.getElementById('nutrition-section');
+const cardioSection = document.getElementById('cardio-section');
+
+// Event Listeners for Tabs
+nutritionTab.addEventListener('click', () => {
+    console.log('Switching to Nutrition Tab');
+    nutritionSection.style.display = 'block';
+    cardioSection.style.display = 'none';
+    nutritionTab.classList.add('active');
+    cardioTab.classList.remove('active');
+});
+
+cardioTab.addEventListener('click', () => {
+    console.log('Switching to Cardio Tab');
+    cardioSection.style.display = 'block';
+    nutritionSection.style.display = 'none';
+    cardioTab.classList.add('active');
+    nutritionTab.classList.remove('active');
+});
+
 // Initialize App State
 let currentUser = 'defaultUser'; // Example default user
 
@@ -39,20 +62,21 @@ function initializeApp() {
         };
         localStorage.setItem(`userData_${currentUser}`, JSON.stringify(defaultData));
     }
+    console.log('Current userData:', localStorage.getItem(`userData_${currentUser}`));
     loadUserData();
 }
 
 // Save and Load User Data
 function saveUserData(data) {
-    console.log(`Saving data to localStorage with key: userData_${currentUser}`);
+    console.log(`Saving data to localStorage with key: userData_${currentUser}`, data);
     localStorage.setItem(`userData_${currentUser}`, JSON.stringify(data));
 }
 
 function loadUserData() {
     console.log(`Accessing localStorage with key: userData_${currentUser}`);
     const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
+    console.log('Loaded userData:', userData);
 
-    // Safeguard against missing elements
     if (calorieGoal) calorieGoal.textContent = userData.calorieGoal || 0;
     if (caloriesConsumed) caloriesConsumed.textContent = userData.caloriesConsumed || 0;
     if (caloriesRemaining) caloriesRemaining.textContent = userData.calorieGoal - userData.caloriesConsumed;
@@ -60,18 +84,11 @@ function loadUserData() {
     if (totalCarbs) totalCarbs.textContent = userData.totalCarbs || 0;
     if (totalProtein) totalProtein.textContent = userData.totalProtein || 0;
 
-    // Debug logs for missing elements
-    console.log('calorieGoal:', calorieGoal);
-    console.log('caloriesConsumed:', caloriesConsumed);
-    console.log('caloriesRemaining:', caloriesRemaining);
-
-    // Load meals into the UI
     mealList.innerHTML = '';
     userData.meals.forEach(meal => {
         addMealToList(meal.name, meal.calories, meal.fats, meal.carbs, meal.protein, false);
     });
 
-    // Load workouts into the UI
     cardioWorkoutList.innerHTML = '';
     userData.workouts.forEach(workout => {
         addCardioToList(workout.time, workout.distance, workout.pace, workout.heartRate, false);
@@ -136,6 +153,7 @@ function addCardioToList(time, distance, pace, heartRate, save = true) {
 goalForm.addEventListener('submit', event => {
     event.preventDefault();
     const goal = parseInt(document.getElementById('daily-goal').value, 10);
+    console.log('Setting Calorie Goal:', goal);
     const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
     userData.calorieGoal = goal;
     saveUserData(userData);
@@ -151,7 +169,7 @@ mealForm.addEventListener('submit', event => {
     const fats = parseInt(document.getElementById('fats').value, 10);
     const carbs = parseInt(document.getElementById('carbs').value, 10);
     const protein = parseInt(document.getElementById('protein').value, 10);
-
+    console.log('Logging Meal:', { name, calories, fats, carbs, protein });
     addMealToList(name, calories, fats, carbs, protein);
     mealForm.reset();
 });
@@ -162,10 +180,12 @@ cardioForm.addEventListener('submit', event => {
     const dist = parseFloat(distance.value);
     const pace = averagePace.value;
     const heartRate = parseInt(averageHeartRate.value, 10);
-
+    console.log('Logging Cardio Workout:', { time, dist, pace, heartRate });
     addCardioToList(time, dist, pace, heartRate);
     cardioForm.reset();
 });
+
+
 
 
 
