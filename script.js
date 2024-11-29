@@ -1,57 +1,48 @@
+// DOM Elements
+const calorieGoal = document.getElementById('calorie-goal');
+const caloriesConsumed = document.getElementById('calories-consumed');
+const caloriesRemaining = document.getElementById('calories-remaining');
+const totalFats = document.getElementById('total-fats');
+const totalCarbs = document.getElementById('total-carbs');
+const totalProtein = document.getElementById('total-protein');
+const mealList = document.getElementById('meal-list');
+const goalForm = document.getElementById('goal-form');
+const mealForm = document.getElementById('meal-form');
+const cardioForm = document.getElementById('cardio-form');
+const workoutTime = document.getElementById('workout-time');
+const distance = document.getElementById('distance');
+const averagePace = document.getElementById('average-pace');
+const averageHeartRate = document.getElementById('average-heart-rate');
+const cardioWorkoutList = document.getElementById('cardio-workout-list');
+
 // Initialize App State
-let currentUser = null; // Track the logged-in user
+let currentUser = 'defaultUser'; // Example default user
 
 function initializeApp() {
-    currentUser = localStorage.getItem('loggedInUser');
-    if (currentUser) {
-        // Ensure userData is initialized
-        if (!localStorage.getItem(`userData_${currentUser}`)) {
-            localStorage.setItem(`userData_${currentUser}`, JSON.stringify({
-                calorieGoal: 0,
-                caloriesConsumed: 0,
-                totalFats: 0,
-                totalCarbs: 0,
-                totalProtein: 0,
-                meals: [],
-                workouts: [],
-            }));
-        }
-        loadUserData();
-    } else {
-        alert('No user logged in. Please set a current user.');
+    if (!localStorage.getItem(`userData_${currentUser}`)) {
+        const defaultData = {
+            calorieGoal: 0,
+            caloriesConsumed: 0,
+            totalFats: 0,
+            totalCarbs: 0,
+            totalProtein: 0,
+            meals: [],
+            workouts: [],
+        };
+        localStorage.setItem(`userData_${currentUser}`, JSON.stringify(defaultData));
     }
+    loadUserData();
 }
 
 // Save and Load User Data
-function saveUserData(userData) {
-    if (!currentUser) {
-        alert('No user logged in. Cannot save data.');
-        return;
-    }
-    localStorage.setItem(`userData_${currentUser}`, JSON.stringify(userData));
+function saveUserData(data) {
+    localStorage.setItem(`userData_${currentUser}`, JSON.stringify(data));
 }
 
 function loadUserData() {
-    if (!currentUser) {
-        alert('No user logged in. Cannot load data.');
-        return;
-    }
+    const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
 
-    let userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`)) || {
-        calorieGoal: 0,
-        caloriesConsumed: 0,
-        totalFats: 0,
-        totalCarbs: 0,
-        totalProtein: 0,
-        meals: [],
-        workouts: [],
-    };
-
-    // Ensure all fields exist in userData
-    userData.meals = userData.meals || [];
-    userData.workouts = userData.workouts || [];
-
-    // Populate UI with saved data
+    // Update UI with saved data
     calorieGoal.textContent = userData.calorieGoal || 0;
     caloriesConsumed.textContent = userData.caloriesConsumed || 0;
     caloriesRemaining.textContent = userData.calorieGoal - userData.caloriesConsumed;
@@ -59,33 +50,30 @@ function loadUserData() {
     totalCarbs.textContent = userData.totalCarbs || 0;
     totalProtein.textContent = userData.totalProtein || 0;
 
-    // Populate meals
-    mealList.innerHTML = ''; // Clear existing list
+    // Load meals into the UI
+    mealList.innerHTML = '';
     userData.meals.forEach(meal => {
         addMealToList(meal.name, meal.calories, meal.fats, meal.carbs, meal.protein, false);
     });
 
-    // Populate workouts
-    cardioWorkoutList.innerHTML = ''; // Clear existing list
+    // Load workouts into the UI
+    cardioWorkoutList.innerHTML = '';
     userData.workouts.forEach(workout => {
         addCardioToList(workout.time, workout.distance, workout.pace, workout.heartRate, false);
     });
 }
 
-// Add Meal to the List
+// Add Meal to List
 function addMealToList(name, calories, fats, carbs, protein, save = true) {
     const mealItem = document.createElement('li');
     mealItem.classList.add('list-group-item');
     mealItem.textContent = `${name}: ${calories} calories, ${fats}g fats, ${carbs}g carbs, ${protein}g protein`;
 
-    // Add delete button
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'float-end');
-    deleteButton.addEventListener('click', function () {
+    deleteButton.addEventListener('click', () => {
         mealList.removeChild(mealItem);
-
-        // Update userData
         const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
         userData.meals = userData.meals.filter(meal => meal.name !== name);
         saveUserData(userData);
@@ -101,20 +89,17 @@ function addMealToList(name, calories, fats, carbs, protein, save = true) {
     }
 }
 
-// Add Cardio Workout to the List
+// Add Cardio Workout to List
 function addCardioToList(time, distance, pace, heartRate, save = true) {
-    const cardioItem = document.createElement('li');
-    cardioItem.classList.add('list-group-item');
-    cardioItem.textContent = `Time: ${time}, Distance: ${distance} miles, Pace: ${pace}, Heart Rate: ${heartRate} bpm`;
+    const workoutItem = document.createElement('li');
+    workoutItem.classList.add('list-group-item');
+    workoutItem.textContent = `Time: ${time}, Distance: ${distance} miles, Pace: ${pace}, Heart Rate: ${heartRate} bpm`;
 
-    // Add delete button
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'float-end');
-    deleteButton.addEventListener('click', function () {
-        cardioWorkoutList.removeChild(cardioItem);
-
-        // Update userData
+    deleteButton.addEventListener('click', () => {
+        cardioWorkoutList.removeChild(workoutItem);
         const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
         userData.workouts = userData.workouts.filter(
             workout => workout.time !== time || workout.distance !== distance
@@ -122,8 +107,8 @@ function addCardioToList(time, distance, pace, heartRate, save = true) {
         saveUserData(userData);
     });
 
-    cardioItem.appendChild(deleteButton);
-    cardioWorkoutList.appendChild(cardioItem);
+    workoutItem.appendChild(deleteButton);
+    cardioWorkoutList.appendChild(workoutItem);
 
     if (save) {
         const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
@@ -133,20 +118,19 @@ function addCardioToList(time, distance, pace, heartRate, save = true) {
 }
 
 // Event Listeners for Forms
-goalForm.addEventListener('submit', function (event) {
+goalForm.addEventListener('submit', event => {
     event.preventDefault();
     const goal = parseInt(document.getElementById('daily-goal').value, 10);
-    calorieGoal.textContent = goal;
-    caloriesRemaining.textContent = goal - parseInt(caloriesConsumed.textContent, 10);
     const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
     userData.calorieGoal = goal;
     saveUserData(userData);
+    calorieGoal.textContent = goal;
+    caloriesRemaining.textContent = goal - parseInt(caloriesConsumed.textContent, 10);
     goalForm.reset();
 });
 
-mealForm.addEventListener('submit', function (event) {
+mealForm.addEventListener('submit', event => {
     event.preventDefault();
-
     const name = document.getElementById('meal-name').value;
     const calories = parseInt(document.getElementById('calories').value, 10);
     const fats = parseInt(document.getElementById('fats').value, 10);
@@ -157,9 +141,8 @@ mealForm.addEventListener('submit', function (event) {
     mealForm.reset();
 });
 
-cardioForm.addEventListener('submit', function (event) {
+cardioForm.addEventListener('submit', event => {
     event.preventDefault();
-
     const time = workoutTime.value;
     const dist = parseFloat(distance.value);
     const pace = averagePace.value;
@@ -171,6 +154,7 @@ cardioForm.addEventListener('submit', function (event) {
 
 // Initialize App
 initializeApp();
+
 
 
 
