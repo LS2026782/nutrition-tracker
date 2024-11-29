@@ -84,13 +84,13 @@ function loadUserData() {
     totalProtein.textContent = userData.totalProtein || 0;
 
     // Populate the meal list
-    mealList.innerHTML = ''; // Clear existing list
+    mealList.innerHTML = '';
     userData.meals.forEach(meal => {
         addMealToList(meal.name, meal.calories, meal.fats, meal.carbs, meal.protein, false);
     });
 
     // Populate the cardio workout list
-    cardioWorkoutList.innerHTML = ''; // Clear existing list
+    cardioWorkoutList.innerHTML = '';
     userData.cardioWorkouts.forEach(workout => {
         addCardioToList(workout.time, workout.distance, workout.pace, workout.heartRate, false);
     });
@@ -108,83 +108,66 @@ function addMealToList(name, calories, fats, carbs, protein, save = true) {
     deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'float-end');
     deleteButton.addEventListener('click', function () {
         mealList.removeChild(mealItem);
-        if (save) {
-            const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
-            userData.meals = userData.meals.filter(meal => meal.name !== name);
-            userData.caloriesConsumed -= calories;
-            userData.totalFats -= fats;
-            userData.totalCarbs -= carbs;
-            userData.totalProtein -= protein;
-            saveUserData(userData);
-        }
+
+        // Update data
+        const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`)) || {};
+        userData.meals = userData.meals.filter(meal => meal.name !== name);
+        saveUserData(userData);
     });
 
     mealItem.appendChild(deleteButton);
     mealList.appendChild(mealItem);
 
     if (save) {
-        updateTotals(calories, fats, carbs, protein);
         const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`)) || {};
-        userData.meals = userData.meals || [];
         userData.meals.push({ name, calories, fats, carbs, protein });
+        userData.caloriesConsumed += calories;
+        userData.totalFats += fats;
+        userData.totalCarbs += carbs;
+        userData.totalProtein += protein;
         saveUserData(userData);
     }
 }
 
-// Add Cardio Workout to the List
+// Add Cardio to the List
 function addCardioToList(time, distance, pace, heartRate, save = true) {
-    const workoutItem = document.createElement('li');
-    workoutItem.classList.add('list-group-item');
-    workoutItem.textContent = `Time: ${time}, Distance: ${distance} miles, Pace: ${pace}, Heart Rate: ${heartRate} bpm`;
+    const cardioItem = document.createElement('li');
+    cardioItem.classList.add('list-group-item');
+    cardioItem.textContent = `Time: ${time}, Distance: ${distance} miles, Pace: ${pace}, Heart Rate: ${heartRate} bpm`;
 
     // Add delete button
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'float-end');
     deleteButton.addEventListener('click', function () {
-        cardioWorkoutList.removeChild(workoutItem);
-        if (save) {
-            const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
-            userData.cardioWorkouts = userData.cardioWorkouts.filter(
-                workout => !(workout.time === time && workout.distance === distance)
-            );
-            saveUserData(userData);
-        }
+        cardioWorkoutList.removeChild(cardioItem);
+
+        // Update data
+        const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`)) || {};
+        userData.cardioWorkouts = userData.cardioWorkouts.filter(workout => workout.time !== time);
+        saveUserData(userData);
     });
 
-    workoutItem.appendChild(deleteButton);
-    cardioWorkoutList.appendChild(workoutItem);
+    cardioItem.appendChild(deleteButton);
+    cardioWorkoutList.appendChild(cardioItem);
 
     if (save) {
         const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`)) || {};
-        userData.cardioWorkouts = userData.cardioWorkouts || [];
         userData.cardioWorkouts.push({ time, distance, pace, heartRate });
         saveUserData(userData);
     }
-}
-
-// Update Totals Function
-function updateTotals(calories, fats, carbs, protein) {
-    caloriesConsumed.textContent = (parseInt(caloriesConsumed.textContent, 10) || 0) + calories;
-    totalFats.textContent = (parseInt(totalFats.textContent, 10) || 0) + fats;
-    totalCarbs.textContent = (parseInt(totalCarbs.textContent, 10) || 0) + carbs;
-    totalProtein.textContent = (parseInt(totalProtein.textContent, 10) || 0) + protein;
-
-    caloriesRemaining.textContent = parseInt(calorieGoal.textContent, 10) - parseInt(caloriesConsumed.textContent, 10);
 }
 
 // Event Listeners for Forms
 goalForm.addEventListener('submit', function (event) {
     event.preventDefault();
     const goal = parseInt(document.getElementById('daily-goal').value, 10);
+    const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`)) || {};
+    userData.calorieGoal = goal;
+    saveUserData(userData);
 
-    if (!isNaN(goal)) {
-        calorieGoal.textContent = goal;
-        caloriesRemaining.textContent = goal - parseInt(caloriesConsumed.textContent, 10);
-        const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`)) || {};
-        userData.calorieGoal = goal;
-        saveUserData(userData);
-    }
+    calorieGoal.textContent = goal;
+    caloriesRemaining.textContent = goal - parseInt(caloriesConsumed.textContent, 10);
     goalForm.reset();
 });
 
@@ -219,6 +202,7 @@ cardioForm.addEventListener('submit', function (event) {
 
 // Initialize App
 initializeApp();
+
 
 
 
