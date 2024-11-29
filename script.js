@@ -1,84 +1,41 @@
-// DOM Elements
-const loginSection = document.getElementById('login-section');
-const logoutSection = document.getElementById('logout-section');
-const loginForm = document.getElementById('login-form');
-const usernameInput = document.getElementById('username');
-const passwordInput = document.getElementById('password'); // Optional password handling
-const logoutButton = document.getElementById('logout-button');
-const calorieGoal = document.getElementById('calorie-goal');
-const caloriesConsumed = document.getElementById('calories-consumed');
-const caloriesRemaining = document.getElementById('calories-remaining');
-const totalFats = document.getElementById('total-fats');
-const totalCarbs = document.getElementById('total-carbs');
-const totalProtein = document.getElementById('total-protein');
-const mealList = document.getElementById('meal-list');
-const goalForm = document.getElementById('goal-form');
-const mealForm = document.getElementById('meal-form');
-
-// Cardio Section DOM Elements
-const cardioForm = document.getElementById('cardio-form');
-const workoutTime = document.getElementById('workout-time');
-const distance = document.getElementById('distance');
-const averagePace = document.getElementById('average-pace');
-const averageHeartRate = document.getElementById('average-heart-rate');
-const cardioWorkoutList = document.getElementById('cardio-workout-list');
-
-// Navigation Logic
-const nutritionTab = document.getElementById('nutrition-tab');
-const cardioTab = document.getElementById('cardio-tab');
-const nutritionSection = document.getElementById('nutrition-section');
-const cardioSection = document.getElementById('cardio-section');
-
-// Handle Tab Navigation
-nutritionTab.addEventListener('click', () => {
-    nutritionSection.style.display = 'block';
-    cardioSection.style.display = 'none';
-    nutritionTab.classList.add('active');
-    cardioTab.classList.remove('active');
-});
-
-cardioTab.addEventListener('click', () => {
-    cardioSection.style.display = 'block';
-    nutritionSection.style.display = 'none';
-    cardioTab.classList.add('active');
-    nutritionTab.classList.remove('active');
-});
-
 // Initialize App State
 let currentUser = null; // Track the logged-in user
 
 function initializeApp() {
-    const loggedInUser = localStorage.getItem('loggedInUser');
-    if (loggedInUser) {
-        currentUser = loggedInUser;
-
-        // Initialize data if it doesn't exist
+    currentUser = localStorage.getItem('loggedInUser');
+    if (currentUser) {
+        // Ensure userData is initialized
         if (!localStorage.getItem(`userData_${currentUser}`)) {
-            const defaultData = {
+            localStorage.setItem(`userData_${currentUser}`, JSON.stringify({
                 calorieGoal: 0,
                 caloriesConsumed: 0,
                 totalFats: 0,
                 totalCarbs: 0,
                 totalProtein: 0,
                 meals: [],
-                workouts: []
-            };
-            localStorage.setItem(`userData_${currentUser}`, JSON.stringify(defaultData));
+                workouts: [],
+            }));
         }
         loadUserData();
+    } else {
+        alert('No user logged in. Please set a current user.');
     }
 }
 
 // Save and Load User Data
-function saveUserData(data) {
-    if (currentUser) {
-        localStorage.setItem(`userData_${currentUser}`, JSON.stringify(data));
-        loadUserData(); // Refresh the UI with the latest data
+function saveUserData(userData) {
+    if (!currentUser) {
+        alert('No user logged in. Cannot save data.');
+        return;
     }
+    localStorage.setItem(`userData_${currentUser}`, JSON.stringify(userData));
 }
 
 function loadUserData() {
-    if (!currentUser) return;
+    if (!currentUser) {
+        alert('No user logged in. Cannot load data.');
+        return;
+    }
 
     let userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`)) || {
         calorieGoal: 0,
@@ -87,12 +44,12 @@ function loadUserData() {
         totalCarbs: 0,
         totalProtein: 0,
         meals: [],
-        workouts: []
+        workouts: [],
     };
 
-    // Fix missing properties if existing userData is incomplete
-    if (!userData.meals) userData.meals = [];
-    if (!userData.workouts) userData.workouts = [];
+    // Ensure all fields exist in userData
+    userData.meals = userData.meals || [];
+    userData.workouts = userData.workouts || [];
 
     // Populate UI with saved data
     calorieGoal.textContent = userData.calorieGoal || 0;
@@ -214,6 +171,7 @@ cardioForm.addEventListener('submit', function (event) {
 
 // Initialize App
 initializeApp();
+
 
 
 
