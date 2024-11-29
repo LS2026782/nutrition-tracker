@@ -21,32 +21,41 @@ const cardioTab = document.getElementById('cardio-tab');
 const nutritionSection = document.getElementById('nutrition-section');
 const cardioSection = document.getElementById('cardio-section');
 
-// Debug log to confirm script.js loads
-console.log('script.js loaded successfully');
+// Verify if all DOM elements are properly initialized
+console.log('DOM Elements Check:');
+console.log('nutritionTab:', nutritionTab);
+console.log('cardioTab:', cardioTab);
+console.log('nutritionSection:', nutritionSection);
+console.log('cardioSection:', cardioSection);
 
-// Tab Switching Logic
-nutritionTab.addEventListener('click', () => {
-    console.log('Switching to Nutrition Tab');
-    nutritionSection.style.display = 'block';
-    cardioSection.style.display = 'none';
-    nutritionTab.classList.add('active');
-    cardioTab.classList.remove('active');
-});
+// Enhanced Tab Navigation with Debug Logs
+if (nutritionTab && cardioTab && nutritionSection && cardioSection) {
+    nutritionTab.addEventListener('click', () => {
+        console.log('Switching to Nutrition Tab');
+        nutritionSection.style.display = 'block';
+        cardioSection.style.display = 'none';
+        nutritionTab.classList.add('active');
+        cardioTab.classList.remove('active');
+        console.log('Nutrition Tab is now active');
+    });
 
-cardioTab.addEventListener('click', () => {
-    console.log('Switching to Cardio Tab');
-    cardioSection.style.display = 'block';
-    nutritionSection.style.display = 'none';
-    cardioTab.classList.add('active');
-    nutritionTab.classList.remove('active');
-});
+    cardioTab.addEventListener('click', () => {
+        console.log('Switching to Cardio Tab');
+        cardioSection.style.display = 'block';
+        nutritionSection.style.display = 'none';
+        cardioTab.classList.add('active');
+        nutritionTab.classList.remove('active');
+        console.log('Cardio Tab is now active');
+    });
+} else {
+    console.error('One or more tab navigation elements are not initialized correctly.');
+}
 
 // Initialize App State
 let currentUser = 'defaultUser'; // Example default user
 
 // Ensure DOM is fully loaded before running the app
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM fully loaded');
     console.log(`Initial currentUser: ${currentUser}`);
     initializeApp();
 });
@@ -66,6 +75,7 @@ function initializeApp() {
         };
         localStorage.setItem(`userData_${currentUser}`, JSON.stringify(defaultData));
     }
+    console.log('Current userData:', localStorage.getItem(`userData_${currentUser}`));
     loadUserData();
 }
 
@@ -172,6 +182,7 @@ mealForm.addEventListener('submit', event => {
     const carbs = parseInt(document.getElementById('carbs').value, 10);
     const protein = parseInt(document.getElementById('protein').value, 10);
 
+    console.log('Logging Meal:', { name, calories, fats, carbs, protein });
     addMealToList(name, calories, fats, carbs, protein);
     mealForm.reset();
 });
@@ -183,14 +194,10 @@ cardioForm.addEventListener('submit', event => {
     const pace = averagePace.value;
     const heartRate = parseInt(averageHeartRate.value, 10);
 
+    console.log('Logging Cardio Workout:', { time, dist, pace, heartRate });
     addCardioToList(time, dist, pace, heartRate);
     cardioForm.reset();
 });
-
-
-
-
-
 
 
 
