@@ -5,48 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Health Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.1/dist/chart.umd.js"></script>
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Health Tracker</a>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link active" id="nutrition-tab" href="#">Nutrition</a></li>
-                    <li class="nav-item"><a class="nav-link" id="cardio-tab" href="#">Cardio</a></li>
-                    <li class="nav-item"><a class="nav-link" id="strength-tab" href="#">Strength Workouts</a></li>
-                    <li class="nav-item"><a class="nav-link" id="sleep-tab" href="#">Sleep</a></li>
-                    <li class="nav-item"><a class="nav-link" id="hydration-tab" href="#">Hydration</a></li>
-                </ul>
-            </div>
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link active" id="nutrition-tab" href="#">Nutrition</a></li>
+                <li class="nav-item"><a class="nav-link" id="cardio-tab" href="#">Cardio</a></li>
+                <li class="nav-item"><a class="nav-link" id="strength-tab" href="#">Strength Workouts</a></li>
+                <li class="nav-item"><a class="nav-link" id="sleep-tab" href="#">Sleep</a></li>
+                <li class="nav-item"><a class="nav-link" id="hydration-tab" href="#">Hydration</a></li>
+            </ul>
         </div>
     </nav>
 
-    <!-- Sections -->
+    <!-- Nutrition Section -->
     <section id="nutrition-section" style="display: block;">
-        <!-- Nutrition Content -->
+        <div class="container my-4">
+            <h1>Nutrition Tracker</h1>
+            <form id="goal-form" class="mb-3">
+                <h2>Set Goals</h2>
+                <input type="number" id="calorie-goal-input" class="form-control mb-2" placeholder="Calorie Goal" required>
+                <input type="number" id="protein-goal-input" class="form-control mb-2" placeholder="Protein Goal (g)" required>
+                <input type="number" id="carb-goal-input" class="form-control mb-2" placeholder="Carb Goal (g)" required>
+                <input type="number" id="fat-goal-input" class="form-control mb-2" placeholder="Fat Goal (g)" required>
+                <button type="submit" class="btn btn-primary">Set Goals</button>
+            </form>
+            <form id="meal-form" class="mb-3">
+                <h2>Log a Meal</h2>
+                <input type="text" id="meal-name" class="form-control mb-2" placeholder="Meal Name" required>
+                <input type="number" id="calories" class="form-control mb-2" placeholder="Calories" required>
+                <input type="number" id="protein" class="form-control mb-2" placeholder="Protein (g)" required>
+                <input type="number" id="carbs" class="form-control mb-2" placeholder="Carbs (g)" required>
+                <input type="number" id="fats" class="form-control mb-2" placeholder="Fats (g)" required>
+                <button type="submit" class="btn btn-primary">Add Meal</button>
+            </form>
+            <ul id="meal-list" class="list-group mt-4"></ul>
+            <canvas id="nutrition-pie-chart" class="mt-4" width="400" height="400"></canvas>
+            <div class="mt-4">
+                <h2>Select Date</h2>
+                <input type="date" id="calendar-picker" class="form-control mb-3">
+            </div>
+        </div>
     </section>
 
+    <!-- Cardio Section -->
     <section id="cardio-section" style="display: none;">
-        <!-- Cardio Content -->
+        <div class="container my-4">
+            <h1>Cardio Tracker</h1>
+            <form id="cardio-form" class="mb-3">
+                <input type="text" id="cardio-time" class="form-control mb-2" placeholder="Workout Time (e.g., 30 mins)" required>
+                <input type="number" id="distance" class="form-control mb-2" placeholder="Distance (miles)" required>
+                <input type="text" id="pace" class="form-control mb-2" placeholder="Average Pace (e.g., 10:00 min/mile)" required>
+                <input type="number" id="calories-burned" class="form-control mb-2" placeholder="Calories Burned" required>
+                <button type="submit" class="btn btn-primary">Log Cardio Workout</button>
+            </form>
+            <div>
+                <h2>Weekly Summary</h2>
+                <p><strong>Total Distance:</strong> <span id="total-distance">0</span> miles</p>
+                <p><strong>Total Time:</strong> <span id="total-time">0 mins</span></p>
+                <p><strong>Total Calories Burned:</strong> <span id="total-calories">0</span> kcal</p>
+            </div>
+            <ul id="cardio-workout-list" class="list-group mt-4"></ul>
+            <canvas id="cardio-trends-chart" class="mt-4" width="400" height="400"></canvas>
+        </div>
     </section>
 
+    <!-- Strength Section -->
     <section id="strength-section" style="display: none;">
         <div class="container my-4">
             <h1>Strength Workouts</h1>
-            <form id="strength-form" class="mb-3">
+            <form id="create-workout-form" class="mb-3">
                 <input type="text" id="exercise-name" class="form-control mb-2" placeholder="Exercise Name" required>
                 <input type="number" id="sets" class="form-control mb-2" placeholder="Sets" required>
                 <input type="number" id="reps" class="form-control mb-2" placeholder="Reps" required>
                 <input type="number" id="weight" class="form-control mb-2" placeholder="Weight (lbs)" required>
-                <button type="submit" class="btn btn-primary">Log Exercise</button>
+                <button type="submit" class="btn btn-primary">Add Exercise</button>
             </form>
-            <ul id="strength-workout-list" class="list-group"></ul>
+            <div>
+                <h2>Workout Plan</h2>
+                <ul id="workout-plan" class="list-group"></ul>
+            </div>
+            <div class="mt-4">
+                <h2>Workout History</h2>
+                <ul id="workout-history" class="list-group"></ul>
+            </div>
         </div>
     </section>
 
+    <!-- Sleep Section -->
     <section id="sleep-section" style="display: none;">
         <div class="container my-4">
             <h1>Sleep Tracker</h1>
@@ -65,6 +115,7 @@
         </div>
     </section>
 
+    <!-- Hydration Section -->
     <section id="hydration-section" style="display: none;">
         <div class="container my-4">
             <h1>Hydration Tracker</h1>
@@ -72,11 +123,7 @@
                 <input type="number" id="water-intake" class="form-control mb-2" placeholder="Water Intake (oz)" required>
                 <button type="submit" class="btn btn-primary">Log Intake</button>
             </form>
-            <p><strong>Goal:</strong> <span id="hydration-goal">64</span> oz</p>
-            <p><strong>Consumed:</strong> <span id="water-consumed">0</span> oz</p>
-            <div class="progress">
-                <div class="progress-bar" id="hydration-progress" style="width: 0%;"></div>
-            </div>
+            <canvas id="hydration-progress-chart"></canvas>
         </div>
     </section>
 
