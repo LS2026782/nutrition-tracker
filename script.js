@@ -1,195 +1,110 @@
 // DOM Elements
+const tabs = {
+    'nutrition-tab': 'nutrition-section',
+    'cardio-tab': 'cardio-section',
+    'strength-tab': 'strength-section',
+    'sleep-tab': 'sleep-section',
+    'hydration-tab': 'hydration-section',
+};
+
+// Tab Navigation
+Object.keys(tabs).forEach(tabId => {
+    const tab = document.getElementById(tabId);
+    const sectionId = tabs[tabId];
+    tab?.addEventListener('click', () => {
+        Object.values(tabs).forEach(section => {
+            document.getElementById(section).style.display = 'none';
+        });
+        document.getElementById(sectionId).style.display = 'block';
+        Object.keys(tabs).forEach(id => document.getElementById(id)?.classList.remove('active'));
+        tab?.classList.add('active');
+    });
+});
+
+// Nutrition Tracker
 const calorieGoal = document.getElementById('calorie-goal');
 const caloriesConsumed = document.getElementById('calories-consumed');
 const caloriesRemaining = document.getElementById('calories-remaining');
-const totalFats = document.getElementById('total-fats');
-const totalCarbs = document.getElementById('total-carbs');
-const totalProtein = document.getElementById('total-protein');
 const mealList = document.getElementById('meal-list');
 const goalForm = document.getElementById('goal-form');
 const mealForm = document.getElementById('meal-form');
-const cardioForm = document.getElementById('cardio-form');
-const workoutTime = document.getElementById('workout-time');
-const distance = document.getElementById('distance');
-const averagePace = document.getElementById('average-pace');
-const averageHeartRate = document.getElementById('average-heart-rate');
-const cardioWorkoutList = document.getElementById('cardio-workout-list');
 
-// Tab Navigation Logic
-const nutritionTab = document.getElementById('nutrition-tab');
-const cardioTab = document.getElementById('cardio-tab');
-const nutritionSection = document.getElementById('nutrition-section');
-const cardioSection = document.getElementById('cardio-section');
+// Strength Workouts
+const strengthForm = document.getElementById('strength-form');
+const strengthWorkoutList = document.getElementById('strength-workout-list');
 
-// Debug Logs
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM fully loaded and parsed");
-    console.log("Checking all required DOM elements...");
-    console.log("nutritionTab:", nutritionTab);
-    console.log("cardioTab:", cardioTab);
-    console.log("nutritionSection:", nutritionSection);
-    console.log("cardioSection:", cardioSection);
+// Sleep Tracker
+const sleepForm = document.getElementById('sleep-form');
+const sleepHoursInput = document.getElementById('sleep-hours');
+const sleepQualityInput = document.getElementById('sleep-quality');
+const sleepTrendsChartCanvas = document.getElementById('sleep-trends-chart');
+let sleepTrendsData = [];
 
-    initializeApp();
-});
-
-// Tab Event Listeners
-nutritionTab?.addEventListener('click', () => {
-    if (!nutritionSection || !cardioSection) {
-        console.error('Sections are not found in the DOM');
-        return;
-    }
-    console.log('Switching to Nutrition Tab');
-    nutritionSection.style.display = 'block';
-    cardioSection.style.display = 'none';
-    nutritionTab.classList.add('active');
-    cardioTab?.classList.remove('active');
-});
-
-cardioTab?.addEventListener('click', () => {
-    if (!nutritionSection || !cardioSection) {
-        console.error('Sections are not found in the DOM');
-        return;
-    }
-    console.log('Switching to Cardio Tab');
-    cardioSection.style.display = 'block';
-    nutritionSection.style.display = 'none';
-    cardioTab.classList.add('active');
-    nutritionTab?.classList.remove('active');
-});
+// Hydration Tracker
+const hydrationForm = document.getElementById('hydration-form');
+const waterIntakeInput = document.getElementById('water-intake');
+const hydrationGoal = document.getElementById('hydration-goal');
+const waterConsumed = document.getElementById('water-consumed');
+const hydrationProgress = document.getElementById('hydration-progress');
 
 // Initialize App State
 let currentUser = 'defaultUser'; // Default user setup
 function initializeApp() {
     console.log(`Initializing app for user: ${currentUser}`);
     if (!localStorage.getItem(`userData_${currentUser}`)) {
-        console.log(`Creating default data for userData_${currentUser}`);
         const defaultData = {
             calorieGoal: 0,
             caloriesConsumed: 0,
-            totalFats: 0,
-            totalCarbs: 0,
-            totalProtein: 0,
             meals: [],
             workouts: [],
+            sleep: [],
+            hydration: { consumed: 0, goal: 64 },
         };
         localStorage.setItem(`userData_${currentUser}`, JSON.stringify(defaultData));
     }
     loadUserData();
 }
 
-// Save and Load User Data
 function saveUserData(data) {
-    console.log(`Saving data to localStorage with key: userData_${currentUser}`, data);
     localStorage.setItem(`userData_${currentUser}`, JSON.stringify(data));
 }
 
 function loadUserData() {
-    console.log(`Accessing localStorage with key: userData_${currentUser}`);
     const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
+    if (!userData) return;
 
-    if (userData) {
-        if (calorieGoal) calorieGoal.textContent = userData.calorieGoal || 0;
-        if (caloriesConsumed) caloriesConsumed.textContent = userData.caloriesConsumed || 0;
-        if (
-            caloriesRemaining &&
-            userData.calorieGoal !== undefined &&
-            userData.caloriesConsumed !== undefined
-        ) {
-            caloriesRemaining.textContent = userData.calorieGoal - userData.caloriesConsumed;
-        }
-        if (totalFats) totalFats.textContent = userData.totalFats || 0;
-        if (totalCarbs) totalCarbs.textContent = userData.totalCarbs || 0;
-        if (totalProtein) totalProtein.textContent = userData.totalProtein || 0;
+    // Nutrition
+    calorieGoal.textContent = userData.calorieGoal;
+    caloriesConsumed.textContent = userData.caloriesConsumed;
+    caloriesRemaining.textContent = userData.calorieGoal - userData.caloriesConsumed;
 
-        if (mealList) {
-            mealList.innerHTML = '';
-            userData.meals.forEach(meal => {
-                addMealToList(meal.name, meal.calories, meal.fats, meal.carbs, meal.protein, false);
-            });
-        }
+    // Hydration
+    waterConsumed.textContent = userData.hydration.consumed;
+    hydrationGoal.textContent = userData.hydration.goal;
+    const hydrationPercent = (userData.hydration.consumed / userData.hydration.goal) * 100;
+    hydrationProgress.style.width = `${hydrationPercent}%`;
 
-        if (cardioWorkoutList) {
-            cardioWorkoutList.innerHTML = '';
-            userData.workouts.forEach(workout => {
-                addCardioToList(
-                    workout.time,
-                    workout.distance,
-                    workout.pace,
-                    workout.heartRate,
-                    false
-                );
-            });
-        }
-    } else {
-        console.error("No userData found in localStorage for key:", `userData_${currentUser}`);
-    }
+    // Sleep Trends
+    sleepTrendsData = userData.sleep || [];
+    updateSleepTrendsChart();
+
+    // Render Meals and Workouts
+    mealList.innerHTML = '';
+    userData.meals.forEach(meal => addMealToList(meal.name, meal.calories, false));
+
+    strengthWorkoutList.innerHTML = '';
+    userData.workouts.forEach(workout => addWorkoutToList(workout.exercise, workout.sets, workout.reps, workout.weight, false));
 }
 
-// Add Meal to List
-function addMealToList(name, calories, fats, carbs, protein, save = true) {
-    const mealItem = document.createElement('li');
-    mealItem.classList.add('list-group-item');
-    mealItem.textContent = `${name}: ${calories} calories, ${fats}g fats, ${carbs}g carbs, ${protein}g protein`;
-
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'Delete';
-    deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'float-end');
-    deleteButton.addEventListener('click', () => {
-        mealList.removeChild(mealItem);
-        const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
-        userData.meals = userData.meals.filter(meal => meal.name !== name);
-        saveUserData(userData);
-    });
-
-    mealItem.appendChild(deleteButton);
-    mealList.appendChild(mealItem);
-
-    if (save) {
-        const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
-        userData.meals.push({ name, calories, fats, carbs, protein });
-        saveUserData(userData);
-    }
-}
-
-// Add Cardio Workout to List
-function addCardioToList(time, distance, pace, heartRate, save = true) {
-    const workoutItem = document.createElement('li');
-    workoutItem.classList.add('list-group-item');
-    workoutItem.textContent = `Time: ${time}, Distance: ${distance} miles, Pace: ${pace}, Heart Rate: ${heartRate} bpm`;
-
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'Delete';
-    deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'float-end');
-    deleteButton.addEventListener('click', () => {
-        cardioWorkoutList.removeChild(workoutItem);
-        const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
-        userData.workouts = userData.workouts.filter(
-            workout => workout.time !== time || workout.distance !== distance
-        );
-        saveUserData(userData);
-    });
-
-    workoutItem.appendChild(deleteButton);
-    cardioWorkoutList.appendChild(workoutItem);
-
-    if (save) {
-        const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
-        userData.workouts.push({ time, distance, pace, heartRate });
-        saveUserData(userData);
-    }
-}
-
-// Event Listeners for Forms
+// Nutrition
 goalForm.addEventListener('submit', event => {
     event.preventDefault();
     const goal = parseInt(document.getElementById('daily-goal').value, 10);
-    console.log('Setting Calorie Goal:', goal);
     const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
     userData.calorieGoal = goal;
     saveUserData(userData);
     calorieGoal.textContent = goal;
-    caloriesRemaining.textContent = goal - parseInt(caloriesConsumed.textContent, 10);
+    caloriesRemaining.textContent = goal - userData.caloriesConsumed;
     goalForm.reset();
 });
 
@@ -197,21 +112,88 @@ mealForm.addEventListener('submit', event => {
     event.preventDefault();
     const name = document.getElementById('meal-name').value;
     const calories = parseInt(document.getElementById('calories').value, 10);
-    const fats = parseInt(document.getElementById('fats').value, 10);
-    const carbs = parseInt(document.getElementById('carbs').value, 10);
-    const protein = parseInt(document.getElementById('protein').value, 10);
-    console.log('Logging Meal:', { name, calories, fats, carbs, protein });
-    addMealToList(name, calories, fats, carbs, protein);
+    addMealToList(name, calories);
     mealForm.reset();
 });
 
-cardioForm.addEventListener('submit', event => {
+function addMealToList(name, calories, save = true) {
+    const listItem = document.createElement('li');
+    listItem.classList.add('list-group-item');
+    listItem.textContent = `${name}: ${calories} calories`;
+    mealList.appendChild(listItem);
+
+    if (save) {
+        const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
+        userData.meals.push({ name, calories });
+        userData.caloriesConsumed += calories;
+        saveUserData(userData);
+        loadUserData();
+    }
+}
+
+// Strength Workouts
+strengthForm.addEventListener('submit', event => {
     event.preventDefault();
-    const time = workoutTime.value;
-    const dist = parseFloat(distance.value);
-    const pace = averagePace.value;
-    const heartRate = parseInt(averageHeartRate.value, 10);
-    console.log('Logging Cardio Workout:', { time, dist, pace, heartRate });
-    addCardioToList(time, dist, pace, heartRate);
-    cardioForm.reset();
+    const exercise = document.getElementById('exercise-name').value;
+    const sets = parseInt(document.getElementById('sets').value, 10);
+    const reps = parseInt(document.getElementById('reps').value, 10);
+    const weight = parseInt(document.getElementById('weight').value, 10);
+    addWorkoutToList(exercise, sets, reps, weight);
+    strengthForm.reset();
 });
+
+function addWorkoutToList(exercise, sets, reps, weight, save = true) {
+    const listItem = document.createElement('li');
+    listItem.classList.add('list-group-item');
+    listItem.textContent = `${exercise}: ${sets} sets, ${reps} reps, ${weight} lbs`;
+    strengthWorkoutList.appendChild(listItem);
+
+    if (save) {
+        const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
+        userData.workouts.push({ exercise, sets, reps, weight });
+        saveUserData(userData);
+    }
+}
+
+// Sleep Tracker
+sleepForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const hours = parseInt(sleepHoursInput.value, 10);
+    const quality = sleepQualityInput.value;
+    sleepTrendsData.push({ hours, quality });
+    updateSleepTrendsChart();
+    const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
+    userData.sleep = sleepTrendsData;
+    saveUserData(userData);
+    sleepForm.reset();
+});
+
+function updateSleepTrendsChart() {
+    const ctx = sleepTrendsChartCanvas.getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: sleepTrendsData.map((_, i) => `Day ${i + 1}`),
+            datasets: [{
+                label: 'Hours of Sleep',
+                data: sleepTrendsData.map(entry => entry.hours),
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            }],
+        },
+        options: { responsive: true, maintainAspectRatio: false },
+    });
+}
+
+// Hydration Tracker
+hydrationForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const intake = parseInt(waterIntakeInput.value, 10);
+    const userData = JSON.parse(localStorage.getItem(`userData_${currentUser}`));
+    userData.hydration.consumed += intake;
+    saveUserData(userData);
+    loadUserData();
+    hydrationForm.reset();
+});
+
+// Initialize the app
+document.addEventListener('DOMContentLoaded', initializeApp);
