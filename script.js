@@ -35,19 +35,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Tab Event Listeners
 nutritionTab?.addEventListener('click', () => {
+    if (!nutritionSection || !cardioSection) {
+        console.error('Sections are not found in the DOM');
+        return;
+    }
     console.log('Switching to Nutrition Tab');
     nutritionSection.style.display = 'block';
     cardioSection.style.display = 'none';
     nutritionTab.classList.add('active');
-    cardioTab.classList.remove('active');
+    cardioTab?.classList.remove('active');
 });
 
 cardioTab?.addEventListener('click', () => {
+    if (!nutritionSection || !cardioSection) {
+        console.error('Sections are not found in the DOM');
+        return;
+    }
     console.log('Switching to Cardio Tab');
     cardioSection.style.display = 'block';
     nutritionSection.style.display = 'none';
     cardioTab.classList.add('active');
-    nutritionTab.classList.remove('active');
+    nutritionTab?.classList.remove('active');
 });
 
 // Initialize App State
@@ -83,20 +91,36 @@ function loadUserData() {
     if (userData) {
         if (calorieGoal) calorieGoal.textContent = userData.calorieGoal || 0;
         if (caloriesConsumed) caloriesConsumed.textContent = userData.caloriesConsumed || 0;
-        if (caloriesRemaining) caloriesRemaining.textContent = userData.calorieGoal - userData.caloriesConsumed;
+        if (
+            caloriesRemaining &&
+            userData.calorieGoal !== undefined &&
+            userData.caloriesConsumed !== undefined
+        ) {
+            caloriesRemaining.textContent = userData.calorieGoal - userData.caloriesConsumed;
+        }
         if (totalFats) totalFats.textContent = userData.totalFats || 0;
         if (totalCarbs) totalCarbs.textContent = userData.totalCarbs || 0;
         if (totalProtein) totalProtein.textContent = userData.totalProtein || 0;
 
-        mealList.innerHTML = '';
-        userData.meals.forEach(meal => {
-            addMealToList(meal.name, meal.calories, meal.fats, meal.carbs, meal.protein, false);
-        });
+        if (mealList) {
+            mealList.innerHTML = '';
+            userData.meals.forEach(meal => {
+                addMealToList(meal.name, meal.calories, meal.fats, meal.carbs, meal.protein, false);
+            });
+        }
 
-        cardioWorkoutList.innerHTML = '';
-        userData.workouts.forEach(workout => {
-            addCardioToList(workout.time, workout.distance, workout.pace, workout.heartRate, false);
-        });
+        if (cardioWorkoutList) {
+            cardioWorkoutList.innerHTML = '';
+            userData.workouts.forEach(workout => {
+                addCardioToList(
+                    workout.time,
+                    workout.distance,
+                    workout.pace,
+                    workout.heartRate,
+                    false
+                );
+            });
+        }
     } else {
         console.error("No userData found in localStorage for key:", `userData_${currentUser}`);
     }
@@ -191,11 +215,3 @@ cardioForm.addEventListener('submit', event => {
     addCardioToList(time, dist, pace, heartRate);
     cardioForm.reset();
 });
-
-
-
-
-
-
-
-

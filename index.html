@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Health Tracker</a>
@@ -24,29 +25,53 @@
         </div>
     </nav>
 
+    <!-- Nutrition Section -->
     <section id="nutrition-section" style="display: block;">
         <div class="container my-4">
             <h1>Nutrition Tracker</h1>
             <p>Track your meals and calories here.</p>
-            <form id="goal-form">
-                <input type="number" id="daily-goal" placeholder="Set Daily Calorie Goal" required>
-                <button type="submit">Set Goal</button>
+            <form id="goal-form" class="mb-3">
+                <input type="number" id="daily-goal" class="form-control mb-2" placeholder="Set Daily Calorie Goal" required>
+                <button type="submit" class="btn btn-primary">Set Goal</button>
             </form>
+
+            <div>
+                <h2>Summary</h2>
+                <p><strong>Calorie Goal:</strong> <span id="calorie-goal">0</span></p>
+                <p><strong>Calories Consumed:</strong> <span id="calories-consumed">0</span></p>
+                <p><strong>Calories Remaining:</strong> <span id="calories-remaining">0</span></p>
+            </div>
+
+            <ul id="meal-list" class="list-group mt-4"></ul>
         </div>
     </section>
 
+    <!-- Cardio Section -->
     <section id="cardio-section" style="display: none;">
         <div class="container my-4">
             <h1>Cardio Tracker</h1>
+            <p>Log your cardio workouts here.</p>
+            <form id="cardio-form" class="mb-3">
+                <div class="mb-2">
+                    <input type="text" id="workout-time" class="form-control" placeholder="Workout Time (e.g., 30 mins)" required>
+                </div>
+                <div class="mb-2">
+                    <input type="number" id="distance" class="form-control" placeholder="Distance (miles)" required>
+                </div>
+                <div class="mb-2">
+                    <input type="text" id="average-pace" class="form-control" placeholder="Average Pace (e.g., 6:00 min/mile)" required>
+                </div>
+                <div class="mb-2">
+                    <input type="number" id="average-heart-rate" class="form-control" placeholder="Average Heart Rate (bpm)" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Log Workout</button>
+            </form>
+
+            <ul id="cardio-workout-list" class="list-group"></ul>
         </div>
     </section>
 
+    <!-- Scripts -->
     <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
-
